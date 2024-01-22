@@ -32,8 +32,9 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.xerial:sqlite-jdbc:3.45.0.0'
+    implementation 'org.hibernate.orm:hibernate-community-dialects:6.4.2.Final'
     compileOnly 'org.projectlombok:lombok'
-    runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
@@ -56,10 +57,3 @@ tasks.register('copyFrontendBuild', Copy) {
 tasks.named('processResources') {
     dependsOn 'copyFrontendBuild'
 }
-
-hibernate {
-    enhancement {
-        enableAssociationManagement = true
-    }
-}
-

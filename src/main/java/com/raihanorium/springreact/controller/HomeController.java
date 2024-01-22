@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/rest/api/v1")
+@RequestMapping("/home")
 public class HomeController {
 
-    @GetMapping("/home")
+    @GetMapping
     public Map<String, String> home() {
         return Map.of("message", "Hello World!");
     }
