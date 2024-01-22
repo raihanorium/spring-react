@@ -1,0 +1,65 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.2.2'
+    id 'io.spring.dependency-management' version '1.1.4'
+    id 'org.hibernate.orm' version '6.4.1.Final'
+    id 'org.graalvm.buildtools.native' version '0.9.28'
+    id 'com.github.node-gradle.node' version '7.0.1'
+}
+
+group = 'com.raihanorium'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '21'
+}
+
+node {
+    download = false
+    nodeProjectDir = file("${project.projectDir}/src/main/frontend")
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.projectlombok:lombok'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+tasks.register('npmBuild', NpmTask) {
+    dependsOn 'npmSetup', 'npmInstall'
+    args = ['run', 'build']
+}
+
+tasks.register('copyFrontendBuild', Copy) {
+    dependsOn 'npmBuild'
+    from "${project.projectDir}/src/main/frontend/build"
+    into "${project.projectDir}/build/resources/main/static"
+}
+
+tasks.named('processResources') {
+    dependsOn 'copyFrontendBuild'
+}
+
+hibernate {
+    enhancement {
+        enableAssociationManagement = true
+    }
+}
+
