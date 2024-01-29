@@ -5,7 +5,7 @@ function App() {
     const [message, setMessage] = useState('Hello');
 
     useEffect(() => {
-        fetch('/rest/api/v1/home')
+        fetch('/home')
             .then((response) => response.json())
             .then((data) => {
                 console.log(data);
