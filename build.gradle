@@ -32,7 +32,7 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.xerial:sqlite-jdbc:3.45.0.0'
+    implementation 'com.mysql:mysql-connector-j:8.3.0'
     implementation 'org.hibernate.orm:hibernate-community-dialects:6.4.2.Final'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
@@ -43,8 +43,13 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+tasks.named('npmInstall', NpmTask) {
+    dependsOn 'npmSetup'
+    args = ['install', '--force']
+}
+
 tasks.register('npmBuild', NpmTask) {
-    dependsOn 'npmSetup', 'npmInstall'
+    dependsOn 'npmInstall'
     args = ['run', 'build']
 }
 
