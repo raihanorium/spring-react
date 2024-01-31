@@ -1,7 +1,5 @@
 import * as React from 'react';
 import {useEffect, useState} from 'react';
-import {collection, onSnapshot} from "firebase/firestore";
-import firestore from "../../firebase";
 import {CSpinner, CTable, CTableBody, CTableDataCell, CTableRow} from "@coreui/react";
 import {Company} from "../../model/Company";
 import {Link} from "react-router-dom";
@@ -9,7 +7,6 @@ import {useCompanyService} from "../../service/useService";
 import {Page} from "../../model/Page";
 
 export default function CompanyList() {
-
     const [companies, setCompanies] = useState<Company[]>();
     const companyService = useCompanyService();
 

@@ -1,0 +1,36 @@
+package com.raihanorium.springreact.service.impl;
+
+import com.raihanorium.springreact.model.Cargo;
+import com.raihanorium.springreact.repository.CargoRepository;
+import com.raihanorium.springreact.service.CargoService;
+import jakarta.annotation.Nonnull;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+
+@Service
+@RequiredArgsConstructor(onConstructor_ = @Nonnull)
+public class CargoServiceImpl implements CargoService {
+
+    @Nonnull
+    private final CargoRepository cargoRepository;
+
+
+    @Override
+    public Optional<Cargo> findById(Long id) {
+        return cargoRepository.findById(id);
+    }
+
+    @Override
+    public Page<Cargo> findAll(Pageable pageable) {
+        return cargoRepository.findAll(pageable);
+    }
+
+    @Override
+    public Cargo save(Cargo cargo) {
+        return cargoRepository.save(cargo);
+    }
+}
