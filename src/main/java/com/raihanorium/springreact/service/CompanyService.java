@@ -1,14 +1,15 @@
 package com.raihanorium.springreact.service;
 
 import com.raihanorium.springreact.model.Company;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface CompanyService {
     Optional<Company> findById(Long id);
 
-    List<Company> findAll(Long id);
+    Page<Company> findAll(Pageable pageable);
 
     Company save(Company company);
 }

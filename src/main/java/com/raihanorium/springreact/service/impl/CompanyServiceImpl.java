@@ -5,6 +5,8 @@ import com.raihanorium.springreact.repository.CompanyRepository;
 import com.raihanorium.springreact.service.CompanyService;
 import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,8 +26,8 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public List<Company> findAll(Long id) {
-        return companyRepository.findAll();
+    public Page<Company> findAll(Pageable pageable) {
+        return companyRepository.findAll(pageable);
     }
 
     @Override
