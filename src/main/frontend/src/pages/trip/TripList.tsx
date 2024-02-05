@@ -1,37 +1,23 @@
 import * as React from 'react';
 import {useEffect, useState} from 'react';
-import {collection, doc, getDoc, onSnapshot} from "firebase/firestore";
-import firestore from "../../firebase";
 import {CSpinner, CTable, CTableBody, CTableDataCell, CTableRow} from "@coreui/react";
 import {Link} from "react-router-dom";
 import {Trip} from "../../model/Trip";
 import DateUtils from "../../utils/DateUtils";
+import {useTripService} from "../../service/useService";
+import {Page} from "../../model/Page";
 
 export default function TripList() {
 
   const [trips, setTrips] = useState<Trip[]>();
+  const tripService = useTripService();
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(firestore, "trips"), async (snapshot) => {
-      const tripsData = await Promise.all(snapshot.docs.map(async (d) => {
-        const company = await getDoc(doc(firestore, "companies", d.get('companyId')));
-        const cargo = await getDoc(doc(firestore, "cargos", d.get('cargoId')));
-        return new Trip(
-            d.id,
-            company.get("name"),
-            cargo.get("name"),
-            d.get('startDate').toDate(),
-            d.get('endDate').toDate(),
-            d.get('from'),
-            d.get('to'),
-            d.get('rent')
-        );
-      }));
-
-      setTrips(tripsData);
-    });
-
-    return () => unsubscribe();
+    if (tripService !== null) {
+      tripService.getTrips().then((trips: Page<Trip>) => {
+        setTrips(trips.content);
+      });
+    }
   }, []);
 
 

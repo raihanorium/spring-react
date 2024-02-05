@@ -1,8 +1,6 @@
 import * as React from 'react';
 import {FormEvent, useEffect, useState} from 'react';
 import {CButton, CCol, CForm, CFormFeedback, CFormInput, CFormLabel, CRow, CSpinner} from "@coreui/react";
-import firestore from "../../firebase";
-import {addDoc, collection, onSnapshot} from "firebase/firestore";
 import {useNavigate} from "react-router-dom";
 import {Trip} from "../../model/Trip";
 import "react-datepicker/dist/react-datepicker.css";
@@ -10,9 +8,15 @@ import {DateInput} from "../../components/DateInput";
 import {Company} from "../../model/Company";
 import Select from "react-select";
 import {Cargo} from "../../model/Cargo";
+import {useCargoService, useCompanyService, useTripService} from "../../service/useService";
+import {Page} from "../../model/Page";
 
 
 export default function TripForm() {
+  const tripService = useTripService();
+  const companyService = useCompanyService();
+  const cargoService = useCargoService();
+
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
   const [companies, setCompanies] = useState<Company[]>();
@@ -51,40 +55,30 @@ export default function TripForm() {
       const formData = new FormData(form);
       const trip = Trip.from(formData);
 
-      addDoc(collection(firestore, 'trips'), trip.toObject())
-          .then(() => navigate("/trip"))
-          .catch(reason => {
-            alert(reason);
-            setSubmitting(false)
-          });
+      if (tripService !== null) {
+        tripService.saveTrip(trip).then(() => {
+          navigate("/trip");
+        }).catch(reason => {
+          alert(reason);
+          setSubmitting(false)
+        });
+        return;
+      }
     }
   }
 
   useEffect(() => {
-    onSnapshot(collection(firestore, "companies"), (snapshot) => {
-      setCompanies(snapshot.docs.map(doc => {
-        return new Company(
-            doc.id,
-            doc.get('name'),
-            doc.get('contactPerson'),
-            doc.get('contactNo'),
-            doc.get('officeAddress')
-        );
-      }))
-    });
+    if (companyService !== null) {
+      companyService.getCompanies().then((companies: Page<Company>) => {
+        setCompanies(companies.content);
+      });
+    }
 
-    onSnapshot(collection(firestore, "cargos"), (snapshot) => {
-      setCargos(snapshot.docs.map(doc => {
-        return new Cargo(
-            doc.id,
-            doc.get('name'),
-            doc.get('proprietor'),
-            doc.get('contactNo'),
-            doc.get('address'),
-            doc.get('reference')
-        );
-      }))
-    });
+    if (cargoService !== null) {
+      cargoService.getCargos().then((cargos: Page<Cargo>) => {
+        setCargos(cargos.content);
+      });
+    }
   }, []);
 
   const companyOptions = companies ? companies
