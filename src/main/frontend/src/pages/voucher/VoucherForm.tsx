@@ -1,8 +1,6 @@
 import * as React from 'react';
 import {FormEvent, useEffect, useState} from 'react';
 import {CButton, CCol, CForm, CFormFeedback, CFormInput, CFormLabel, CRow, CSpinner} from "@coreui/react";
-import firestore from "../../firebase";
-import {addDoc, collection, onSnapshot} from "firebase/firestore";
 import {useNavigate} from "react-router-dom";
 import {Voucher} from "../../model/Voucher";
 import "react-datepicker/dist/react-datepicker.css";
@@ -11,9 +9,15 @@ import {Trip} from "../../model/Trip";
 import Select from "react-select";
 import {Cargo} from "../../model/Cargo";
 import DateUtils from "../../utils/DateUtils";
+import {useCargoService, useTripService, useVoucherService} from "../../service/useService";
+import {Page} from "../../model/Page";
 
 
 export default function VoucherForm() {
+  const voucherService = useVoucherService();
+  const tripService = useTripService();
+  const cargoService = useCargoService();
+
   const [date, setDate] = useState();
   const [trips, setTrips] = useState<Trip[]>();
   const [cargos, setCargos] = useState<Cargo[]>();
@@ -31,7 +35,6 @@ export default function VoucherForm() {
 
   const handleTripChange = (selectedOption: any) => {
     setTripId(selectedOption);
-    setTripValid(!!selectedOption);
   };
 
   const handleCargoChange = (selectedOption: any) => {
@@ -44,51 +47,38 @@ export default function VoucherForm() {
     event.stopPropagation()
     const form = event.currentTarget
     setValidated(true);
-    setTripValid(!!tripId);
     setCargoValid(!!cargoId);
     if (form.checkValidity()) {
       setSubmitting(true);
       const formData = new FormData(form);
       const voucher = Voucher.from(formData);
 
-      addDoc(collection(firestore, 'vouchers'), voucher.toObject())
-          .then(() => navigate("/voucher"))
-          .catch(reason => {
-            alert(reason);
-            setSubmitting(false)
-          });
+      if (voucherService !== null) {
+        voucherService.saveVoucher(voucher).then(() => {
+          navigate("/voucher");
+        }).catch(reason => {
+          alert(reason);
+          setSubmitting(false)
+        });
+        return;
+      }
     }
   }
 
   useEffect(() => {
-    onSnapshot(collection(firestore, "trips"), (snapshot) => {
-      setTrips(snapshot.docs.map(d => {
-        return new Trip(
-            d.id,
-            d.get("companyId"),
-            d.get("cargoId"),
-            d.get('startDate').toDate(),
-            d.get('endDate').toDate(),
-            d.get('from'),
-            d.get('to'),
-            d.get('rent')
-        );
-      }))
-    });
+    if (cargoService !== null) {
+      cargoService.getCargos().then((cargos: Page<Cargo>) => {
+        setCargos(cargos.content);
+      });
+    }
 
-    onSnapshot(collection(firestore, "cargos"), (snapshot) => {
-      setCargos(snapshot.docs.map(doc => {
-        return new Cargo(
-            doc.id,
-            doc.get('name'),
-            doc.get('proprietor'),
-            doc.get('contactNo'),
-            doc.get('address'),
-            doc.get('reference')
-        );
-      }))
-    });
+    if (tripService !== null) {
+      tripService.getTrips().then((trips: Page<Trip>) => {
+        setTrips(trips.content);
+      });
+    }
   }, []);
+
 
   const tripOptions = trips ? trips
       .map(trip => ({
@@ -106,22 +96,6 @@ export default function VoucherForm() {
              onSubmit={handleSubmit}>
         <CRow className="mb-3">
           <CCol>
-            <CFormLabel htmlFor="tripId">Trip</CFormLabel>
-            <Select name="tripId" id="tripId" options={tripOptions} isClearable={true} required
-                    onChange={handleTripChange}
-                    styles={{
-                      control: (baseStyles, state) => ({
-                        ...baseStyles,
-                        borderColor: validated ? (tripValid ? '#2eb85c' : 'red') : 'gray',
-                      }),
-                    }}/>
-            <CFormFeedback invalid style={{display: tripValid ? 'none' : 'block'}}>
-              Please select a trip.
-            </CFormFeedback>
-          </CCol>
-        </CRow>
-        <CRow className="mb-3">
-          <CCol>
             <CFormLabel htmlFor="cargoId">Cargo</CFormLabel>
             <Select name="cargoId" id="cargoId" options={cargoOptions} isClearable={true} required
                     onChange={handleCargoChange}
@@ -133,6 +107,22 @@ export default function VoucherForm() {
                     }}/>
             <CFormFeedback invalid style={{display: cargoValid ? 'none' : 'block'}}>
               Please select a cargo.
+            </CFormFeedback>
+          </CCol>
+        </CRow>
+        <CRow className="mb-3">
+          <CCol>
+            <CFormLabel htmlFor="tripId">Trip</CFormLabel>
+            <Select name="tripId" id="tripId" options={tripOptions} isClearable={true}
+                    onChange={handleTripChange}
+                    styles={{
+                      control: (baseStyles, state) => ({
+                        ...baseStyles,
+                        borderColor: validated ? (tripValid ? '#2eb85c' : 'red') : 'gray',
+                      }),
+                    }}/>
+            <CFormFeedback invalid style={{display: tripValid ? 'none' : 'block'}}>
+              Trip is not valid
             </CFormFeedback>
           </CCol>
         </CRow>
