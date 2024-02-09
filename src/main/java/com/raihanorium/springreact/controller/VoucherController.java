@@ -20,6 +20,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Objects;
+
 @RestController
 @RequestMapping(Paths.VOUCHERS)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -52,7 +54,7 @@ public class VoucherController {
     @PostMapping
     public ResponseEntity<Response<Voucher>> createVoucher(@RequestBody VoucherDto voucherDto) {
         Cargo cargo = cargoService.findById(voucherDto.getCargoId()).orElseThrow(CargoNotFoundException::new);
-        Trip trip = tripService.findById(voucherDto.getTripId()).orElseThrow(TripNotFoundException::new);
+        Trip trip = Objects.isNull(voucherDto.getTripId()) ? null : tripService.findById(voucherDto.getTripId()).orElseThrow(TripNotFoundException::new);
         Voucher voucher = Voucher.builder()
                 .cargo(cargo)
                 .trip(trip)

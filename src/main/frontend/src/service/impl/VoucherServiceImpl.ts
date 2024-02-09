@@ -11,7 +11,7 @@ export class VoucherServiceImpl implements VoucherService {
     return await fetch(Paths.VOUCHERS).then(async response => {
       if (response.ok) {
         const json = await response.json();
-        const vouchers = json.data.content.map((voucher: any) => new Voucher(voucher.id, voucher.cargo.name, voucher.trip.id, voucher.voucherNo, new Date(voucher.date), voucher.dr, voucher.cr, voucher.particular));
+        const vouchers = json.data.content.map((voucher: any) => new Voucher(voucher.id, voucher.cargo.name, voucher.trip?.id, voucher.voucherNo, new Date(voucher.date), voucher.dr, voucher.cr, voucher.particular));
         return new Page<Voucher>(vouchers, json.data.number, json.data.size, json.data.totalElements);
       } else {
         throw new Error("Failed to fetch vouchers");

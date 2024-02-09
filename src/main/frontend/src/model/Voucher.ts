@@ -3,8 +3,8 @@ export class Voucher {
   public static from(formData: FormData): Voucher {
     return new Voucher(
         formData.get("id") as string | null,
-        formData.get("tripId") as string | null,
         formData.get("cargoId") as string | null,
+        formData.get("tripId") as string | null,
         formData.get("voucherNo") as string | null,
         new Date(Date.parse(formData.get("date") as string)),
         formData.get("dr") as Number | null,
@@ -16,8 +16,8 @@ export class Voucher {
   public toObject() {
     return {
       id: this.id,
-      tripId: this.tripId,
       cargoId: this.cargoId,
+      tripId: this.tripId,
       voucherNo: this.voucherNo,
       date: this.date,
       dr: this.dr,
@@ -28,8 +28,8 @@ export class Voucher {
 
   public constructor(
       public id: string | null,
-      public tripId: string | null,
       public cargoId: string | null,
+      public tripId: string | null,
       public voucherNo: string | null,
       public date: Date | null,
       public dr: Number | null,
