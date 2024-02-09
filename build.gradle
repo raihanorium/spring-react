@@ -51,6 +51,7 @@ tasks.named('npmInstall', NpmTask) {
 
 tasks.register('npmBuild', NpmTask) {
     dependsOn 'npmInstall'
+    environment = ['REACT_APP_API_BASE_URL': '/rest/api/v1']
     args = ['run', 'build']
 }
 
