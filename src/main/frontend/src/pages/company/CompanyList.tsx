@@ -1,10 +1,11 @@
 import * as React from 'react';
 import {useEffect, useState} from 'react';
-import {CSpinner, CTable, CTableBody, CTableDataCell, CTableRow} from "@coreui/react";
+import {CSpinner, CTable, CTableBody, CTableDataCell, CTableFoot, CTableRow} from "@coreui/react";
 import {Company} from "../../model/Company";
 import {Link} from "react-router-dom";
 import {useCompanyService} from "../../service/useService";
 import {Page} from "../../model/Page";
+import {Pagination} from "../../utils/Pagination";
 
 export default function CompanyList() {
   const companyService = useCompanyService();
@@ -14,6 +15,7 @@ export default function CompanyList() {
 
   useEffect(() => {
     if (companyService !== null) {
+      setCompaniesPage(undefined);
       companyService.getCompanies(currentPageNumber).then((companies: Page<Company>) => {
         setCompaniesPage(companies);
       });
@@ -49,6 +51,13 @@ export default function CompanyList() {
                 </CTableDataCell>
               </CTableRow>)}
         </CTableBody>
+        <CTableFoot>
+          <CTableRow>
+            <CTableDataCell colSpan={4}>
+              <Pagination page={companiesPage} setCurrentPageNumber={setCurrentPageNumber}/>
+            </CTableDataCell>
+          </CTableRow>
+        </CTableFoot>
       </CTable>
   );
 }

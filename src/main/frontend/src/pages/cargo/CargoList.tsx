@@ -1,10 +1,11 @@
 import * as React from 'react';
 import {useEffect, useState} from 'react';
-import {CSpinner, CTable, CTableBody, CTableDataCell, CTableRow} from "@coreui/react";
+import {CSpinner, CTable, CTableBody, CTableDataCell, CTableFoot, CTableRow} from "@coreui/react";
 import {Link} from "react-router-dom";
 import {Cargo} from "../../model/Cargo";
 import {useCargoService} from "../../service/useService";
 import {Page} from "../../model/Page";
+import {Pagination} from "../../utils/Pagination";
 
 export default function CargoList() {
   const cargoService = useCargoService();
@@ -13,6 +14,7 @@ export default function CargoList() {
 
   useEffect(() => {
     if (cargoService !== null) {
+      setCargosPage(undefined);
       cargoService.getCargos(currentPageNumber).then((cargos: Page<Cargo>) => {
         setCargosPage(cargos)
       });
@@ -50,6 +52,13 @@ export default function CargoList() {
                 </CTableDataCell>
               </CTableRow>)}
         </CTableBody>
+        <CTableFoot>
+          <CTableRow>
+            <CTableDataCell colSpan={6}>
+              <Pagination page={cargosPage} setCurrentPageNumber={setCurrentPageNumber}/>
+            </CTableDataCell>
+          </CTableRow>
+        </CTableFoot>
       </CTable>
   );
 }

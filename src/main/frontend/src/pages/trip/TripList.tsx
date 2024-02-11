@@ -1,11 +1,12 @@
 import * as React from 'react';
 import {useEffect, useState} from 'react';
-import {CSpinner, CTable, CTableBody, CTableDataCell, CTableRow} from "@coreui/react";
+import {CSpinner, CTable, CTableBody, CTableDataCell, CTableFoot, CTableRow} from "@coreui/react";
 import {Link} from "react-router-dom";
 import {Trip} from "../../model/Trip";
 import DateUtils from "../../utils/DateUtils";
 import {useTripService} from "../../service/useService";
 import {Page} from "../../model/Page";
+import {Pagination} from "../../utils/Pagination";
 
 export default function TripList() {
   const tripService = useTripService();
@@ -15,6 +16,7 @@ export default function TripList() {
 
   useEffect(() => {
     if (tripService !== null) {
+      setTripsPage(undefined);
       tripService.getTrips().then((trips: Page<Trip>) => {
         setTripsPage(trips);
       });
@@ -54,6 +56,13 @@ export default function TripList() {
                 </CTableDataCell>
               </CTableRow>)}
         </CTableBody>
+        <CTableFoot>
+          <CTableRow>
+            <CTableDataCell colSpan={6}>
+              <Pagination page={tripsPage} setCurrentPageNumber={setCurrentPageNumber}/>
+            </CTableDataCell>
+          </CTableRow>
+        </CTableFoot>
       </CTable>
   );
 }

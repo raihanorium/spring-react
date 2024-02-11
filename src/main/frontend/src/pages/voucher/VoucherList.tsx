@@ -1,11 +1,12 @@
 import * as React from 'react';
 import {useEffect, useState} from 'react';
-import {CSpinner, CTable, CTableBody, CTableDataCell, CTableRow} from "@coreui/react";
+import {CSpinner, CTable, CTableBody, CTableDataCell, CTableFoot, CTableRow} from "@coreui/react";
 import {Link} from "react-router-dom";
 import {Voucher} from "../../model/Voucher";
 import DateUtils from "../../utils/DateUtils";
 import {useVoucherService} from "../../service/useService";
 import {Page} from "../../model/Page";
+import {Pagination} from "../../utils/Pagination";
 
 export default function VoucherList() {
   const voucherService = useVoucherService();
@@ -15,6 +16,7 @@ export default function VoucherList() {
 
   useEffect(() => {
     if (voucherService !== null) {
+      setVouchersPage(undefined);
       voucherService.getVouchers(currentPageNumber).then((vouchers) => {
         setVouchersPage(vouchers);
       });
@@ -56,6 +58,13 @@ export default function VoucherList() {
                 </CTableDataCell>
               </CTableRow>)}
         </CTableBody>
+        <CTableFoot>
+          <CTableRow>
+            <CTableDataCell colSpan={7}>
+              <Pagination page={vouchersPage} setCurrentPageNumber={setCurrentPageNumber}/>
+            </CTableDataCell>
+          </CTableRow>
+        </CTableFoot>
       </CTable>
   );
 }
