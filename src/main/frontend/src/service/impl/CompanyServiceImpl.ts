@@ -7,8 +7,9 @@ export class CompanyServiceImpl implements CompanyService {
     constructor() {
     }
 
-    async getCompanies(): Promise<Page<Company>> {
-        return await fetch(Paths.COMPANIES).then(async response => {
+    async getCompanies(page?: number): Promise<Page<Company>> {
+        const url = page ? `${Paths.COMPANIES}?page=${page}` : Paths.COMPANIES;
+        return await fetch(url).then(async response => {
             if (response.ok) {
                 const json = await response.json();
                 return new Page<Company>(json.data.content, json.data.number, json.data.size, json.data.totalElements);

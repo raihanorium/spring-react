@@ -8,18 +8,18 @@ import {useTripService} from "../../service/useService";
 import {Page} from "../../model/Page";
 
 export default function TripList() {
-
-  const [trips, setTrips] = useState<Trip[]>();
   const tripService = useTripService();
+
+  const [tripsPage, setTripsPage] = useState<Page<Trip>>();
+  const [currentPageNumber, setCurrentPageNumber] = useState<number>(0);
 
   useEffect(() => {
     if (tripService !== null) {
       tripService.getTrips().then((trips: Page<Trip>) => {
-        setTrips(trips.content);
+        setTripsPage(trips);
       });
     }
-  }, []);
-
+  }, [currentPageNumber]);
 
   const columns = [
     {key: 'companyId', label: 'Company', _props: {scope: 'col'}},
@@ -33,7 +33,7 @@ export default function TripList() {
   return (
       <CTable striped hover columns={columns}>
         <CTableBody>
-          {trips ? trips.map(trip => {
+          {tripsPage?.content ? tripsPage?.content.map(trip => {
             return (
                 <CTableRow key={trip.id}>
                   <CTableDataCell>

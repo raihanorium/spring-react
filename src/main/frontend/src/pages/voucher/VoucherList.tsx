@@ -5,20 +5,21 @@ import {Link} from "react-router-dom";
 import {Voucher} from "../../model/Voucher";
 import DateUtils from "../../utils/DateUtils";
 import {useVoucherService} from "../../service/useService";
+import {Page} from "../../model/Page";
 
 export default function VoucherList() {
-
   const voucherService = useVoucherService();
 
-  const [vouchers, setVouchers] = useState<Voucher[]>();
+  const [vouchersPage, setVouchersPage] = useState<Page<Voucher>>();
+  const [currentPageNumber, setCurrentPageNumber] = useState<number>(0);
 
   useEffect(() => {
     if (voucherService !== null) {
-      voucherService.getVouchers().then((vouchers) => {
-        setVouchers(vouchers.content);
+      voucherService.getVouchers(currentPageNumber).then((vouchers) => {
+        setVouchersPage(vouchers);
       });
     }
-  }, []);
+  }, [currentPageNumber]);
 
   const columns = [
     {key: 'cargoId', label: 'Cargo', _props: {scope: 'col'}},
@@ -33,7 +34,7 @@ export default function VoucherList() {
   return (
       <CTable striped hover columns={columns}>
         <CTableBody>
-          {vouchers ? vouchers.map(voucher => {
+          {vouchersPage?.content ? vouchersPage.content.map(voucher => {
             return (
                 <CTableRow key={voucher.id}>
                   <CTableDataCell>{voucher.cargoId}</CTableDataCell>

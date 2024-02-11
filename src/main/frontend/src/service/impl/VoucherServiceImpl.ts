@@ -7,8 +7,9 @@ export class VoucherServiceImpl implements VoucherService {
   constructor() {
   }
 
-  async getVouchers(): Promise<Page<Voucher>> {
-    return await fetch(Paths.VOUCHERS).then(async response => {
+  async getVouchers(page?: number): Promise<Page<Voucher>> {
+    const url = page ? `${Paths.VOUCHERS}?page=${page}` : Paths.VOUCHERS;
+    return await fetch(url).then(async response => {
       if (response.ok) {
         const json = await response.json();
         const vouchers = json.data.content.map((voucher: any) => new Voucher(voucher.id, voucher.cargo.name, voucher.trip?.id, voucher.voucherNo, new Date(voucher.date), voucher.dr, voucher.cr, voucher.particular));
