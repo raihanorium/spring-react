@@ -1,25 +1,27 @@
 import * as React from 'react';
 import {useEffect, useState} from 'react';
-import {CSpinner, CTable, CTableBody, CTableDataCell, CTableFoot, CTableRow} from "@coreui/react";
+import {CTable, CTableBody, CTableDataCell, CTableFoot, CTableRow} from "@coreui/react";
 import {Link} from "react-router-dom";
 import {Trip} from "../../model/Trip";
 import DateUtils from "../../utils/DateUtils";
 import {useTripService} from "../../service/useService";
 import {Page} from "../../model/Page";
 import {Pagination} from "../../utils/Pagination";
+import {SpinnerContainer} from "../../utils/SpinnerContainer";
 
 export default function TripList() {
   const tripService = useTripService();
 
   const [tripsPage, setTripsPage] = useState<Page<Trip>>();
   const [currentPageNumber, setCurrentPageNumber] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (tripService !== null) {
-      setTripsPage(undefined);
+      setLoading(true);
       tripService.getTrips().then((trips: Page<Trip>) => {
         setTripsPage(trips);
-      });
+      }).finally(() => setLoading(false));
     }
   }, [currentPageNumber]);
 
@@ -33,36 +35,31 @@ export default function TripList() {
   ];
 
   return (
-      <CTable striped hover columns={columns}>
-        <CTableBody>
-          {tripsPage?.content ? tripsPage?.content.map(trip => {
-            return (
-                <CTableRow key={trip.id}>
-                  <CTableDataCell>
-                    <Link to={'/trip/' + trip.id}>{trip.companyId}</Link>
-                  </CTableDataCell>
-                  <CTableDataCell>{trip.cargoId}</CTableDataCell>
-                  <CTableDataCell>{DateUtils.toString(trip.startDate)}</CTableDataCell>
-                  <CTableDataCell>{DateUtils.toString(trip.endDate)}</CTableDataCell>
-                  <CTableDataCell>{trip.from}</CTableDataCell>
-                  <CTableDataCell>{trip.to}</CTableDataCell>
-                </CTableRow>)
-          }) : (
-              <CTableRow>
-                <CTableDataCell colSpan={6}>
-                  <div className="d-flex justify-content-center">
-                    <CSpinner color="primary"/>
-                  </div>
-                </CTableDataCell>
-              </CTableRow>)}
-        </CTableBody>
-        <CTableFoot>
-          <CTableRow>
-            <CTableDataCell colSpan={6}>
-              <Pagination page={tripsPage} setCurrentPageNumber={setCurrentPageNumber}/>
-            </CTableDataCell>
-          </CTableRow>
-        </CTableFoot>
-      </CTable>
+      <SpinnerContainer loading={loading}>
+        <CTable striped hover columns={columns}>
+          <CTableBody>
+            {tripsPage?.content && tripsPage?.content.map(trip => {
+              return (
+                  <CTableRow key={trip.id}>
+                    <CTableDataCell>
+                      <Link to={'/trip/' + trip.id}>{trip.companyId}</Link>
+                    </CTableDataCell>
+                    <CTableDataCell>{trip.cargoId}</CTableDataCell>
+                    <CTableDataCell>{DateUtils.toString(trip.startDate)}</CTableDataCell>
+                    <CTableDataCell>{DateUtils.toString(trip.endDate)}</CTableDataCell>
+                    <CTableDataCell>{trip.from}</CTableDataCell>
+                    <CTableDataCell>{trip.to}</CTableDataCell>
+                  </CTableRow>)
+            })}
+          </CTableBody>
+          <CTableFoot>
+            <CTableRow>
+              <CTableDataCell colSpan={6}>
+                <Pagination page={tripsPage} setCurrentPageNumber={setCurrentPageNumber}/>
+              </CTableDataCell>
+            </CTableRow>
+          </CTableFoot>
+        </CTable>
+      </SpinnerContainer>
   );
 }
