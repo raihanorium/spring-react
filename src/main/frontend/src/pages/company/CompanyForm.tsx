@@ -2,7 +2,7 @@ import * as React from 'react';
 import {FormEvent, useEffect, useState} from 'react';
 import {CButton, CCol, CForm, CFormInput, CRow, CSpinner} from "@coreui/react";
 import {Company} from "../../model/Company";
-import {matchRoutes, useNavigate, useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {useCompanyService} from "../../service/useService";
 
 export default function CompanyForm() {
