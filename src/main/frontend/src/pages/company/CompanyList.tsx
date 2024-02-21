@@ -7,6 +7,8 @@ import {useCompanyService} from "../../service/useService";
 import {Page} from "../../model/Page";
 import {Pagination} from "../../utils/Pagination";
 import {SpinnerContainer} from "../../utils/SpinnerContainer";
+import * as icon from "@coreui/icons";
+import CIcon from "@coreui/icons-react";
 
 export default function CompanyList() {
   const companyService = useCompanyService();
@@ -29,6 +31,7 @@ export default function CompanyList() {
     {key: 'contactPerson', label: 'Contact Person', _props: {scope: 'col'}},
     {key: 'contactNo', label: 'Contact No', _props: {scope: 'col'}},
     {key: 'officeAddress', label: 'Office Address', _props: {scope: 'col'}},
+    {key: 'action', label: '', _props: {scope: 'col'}},
   ];
 
   return (
@@ -44,12 +47,17 @@ export default function CompanyList() {
                     <CTableDataCell>{company.contactPerson}</CTableDataCell>
                     <CTableDataCell>{company.contactNo}</CTableDataCell>
                     <CTableDataCell>{company.officeAddress}</CTableDataCell>
+                    <CTableDataCell>
+                      <Link to={'/company/edit/' + company.id}>
+                        <CIcon icon={icon.cilPenAlt} customClassName="nav-icon"/>
+                      </Link>
+                    </CTableDataCell>
                   </CTableRow>)
             })}
           </CTableBody>
           <CTableFoot>
             <CTableRow>
-              <CTableDataCell colSpan={4}>
+              <CTableDataCell colSpan={5}>
                 <Pagination page={companiesPage} setCurrentPageNumber={setCurrentPageNumber}/>
               </CTableDataCell>
             </CTableRow>
