@@ -20,6 +20,17 @@ export class TripServiceImpl implements TripService {
     });
   }
 
+  async getTrip(id: number): Promise<Trip> {
+    return await fetch(`${Paths.TRIPS}/${id}`).then(async response => {
+      if (response.ok) {
+        const json = await response.json();
+        return new Trip(json.data.id, json.data.company?.id, json.data.cargo?.id, new Date(json.data.startDate), new Date(json.data.endDate), json.data.from, json.data.to, json.data.rent);
+      } else {
+        throw new Error("Failed to fetch trip");
+      }
+    });
+  }
+
   async saveTrip(trip: Trip): Promise<Trip> {
     return await fetch(Paths.TRIPS, {
       method: "POST",

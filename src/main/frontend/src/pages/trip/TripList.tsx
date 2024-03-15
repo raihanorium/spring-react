@@ -8,6 +8,8 @@ import {useTripService} from "../../service/useService";
 import {Page} from "../../model/Page";
 import {Pagination} from "../../utils/Pagination";
 import {SpinnerContainer} from "../../utils/SpinnerContainer";
+import CIcon from "@coreui/icons-react";
+import * as icon from "@coreui/icons";
 
 export default function TripList() {
   const tripService = useTripService();
@@ -32,6 +34,7 @@ export default function TripList() {
     {key: 'endDate', label: 'End Date', _props: {scope: 'col'}},
     {key: 'from', label: 'From', _props: {scope: 'col'}},
     {key: 'to', label: 'To', _props: {scope: 'col'}},
+    {key: 'action', label: '', _props: {scope: 'col'}},
   ];
 
   return (
@@ -49,12 +52,17 @@ export default function TripList() {
                     <CTableDataCell>{DateUtils.toString(trip.endDate)}</CTableDataCell>
                     <CTableDataCell>{trip.from}</CTableDataCell>
                     <CTableDataCell>{trip.to}</CTableDataCell>
+                    <CTableDataCell>
+                      <Link to={'/trip/edit/' + trip.id}>
+                        <CIcon icon={icon.cilPenAlt} customClassName="nav-icon"/>
+                      </Link>
+                    </CTableDataCell>
                   </CTableRow>)
             })}
           </CTableBody>
           <CTableFoot>
             <CTableRow>
-              <CTableDataCell colSpan={6}>
+              <CTableDataCell colSpan={7}>
                 <Pagination page={tripsPage} setCurrentPageNumber={setCurrentPageNumber}/>
               </CTableDataCell>
             </CTableRow>

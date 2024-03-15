@@ -40,6 +40,7 @@ const AppContent = () => {
           <Route path="/trip" element={<TripLayout/>}>
             <Route index element={<TripList/>}/>
             <Route path="new" element={<TripForm/>}/>
+            <Route path="edit/:tripId" element={<TripForm/>}/>
           </Route>
           <Route path="/voucher" element={<VoucherLayout/>}>
             <Route index element={<VoucherList/>}/>
