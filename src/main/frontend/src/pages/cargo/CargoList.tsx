@@ -7,6 +7,8 @@ import {useCargoService} from "../../service/useService";
 import {Page} from "../../model/Page";
 import {Pagination} from "../../utils/Pagination";
 import {SpinnerContainer} from "../../utils/SpinnerContainer";
+import CIcon from "@coreui/icons-react";
+import * as icon from "@coreui/icons";
 
 export default function CargoList() {
   const cargoService = useCargoService();
@@ -30,6 +32,7 @@ export default function CargoList() {
     {key: 'contactNo', label: 'Contact No', _props: {scope: 'col'}},
     {key: 'address', label: 'Address', _props: {scope: 'col'}},
     {key: 'reference', label: 'Reference', _props: {scope: 'col'}},
+    {key: 'action', label: '', _props: {scope: 'col'}},
   ];
 
   return (
@@ -46,12 +49,17 @@ export default function CargoList() {
                     <CTableDataCell>{cargo.contactNo}</CTableDataCell>
                     <CTableDataCell>{cargo.address}</CTableDataCell>
                     <CTableDataCell>{cargo.reference}</CTableDataCell>
+                    <CTableDataCell>
+                      <Link to={'/cargo/edit/' + cargo.id}>
+                        <CIcon icon={icon.cilPenAlt} customClassName="nav-icon"/>
+                      </Link>
+                    </CTableDataCell>
                   </CTableRow>)
             })}
           </CTableBody>
           <CTableFoot>
             <CTableRow>
-              <CTableDataCell colSpan={6}>
+              <CTableDataCell colSpan={7}>
                 <Pagination page={cargosPage} setCurrentPageNumber={setCurrentPageNumber}/>
               </CTableDataCell>
             </CTableRow>

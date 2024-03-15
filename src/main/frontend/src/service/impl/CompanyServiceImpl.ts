@@ -23,10 +23,9 @@ export class CompanyServiceImpl implements CompanyService {
         return await fetch(`${Paths.COMPANIES}/${id}`).then(async response => {
             if (response.ok) {
                 const json = await response.json();
-                console.log(json);
                 return new Company(json.data.id, json.data.name, json.data.contactPerson, json.data.contactNo, json.data.officeAddress);
             } else {
-                throw new Error("Failed to fetch companies");
+                throw new Error("Failed to fetch company");
             }
         });
     }

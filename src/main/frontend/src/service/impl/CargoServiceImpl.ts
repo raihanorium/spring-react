@@ -19,6 +19,17 @@ export class CargoServiceImpl implements CargoService {
     });
   }
 
+  async getCargo(id: number): Promise<Cargo> {
+    return await fetch(`${Paths.CARGOS}/${id}`).then(async response => {
+      if (response.ok) {
+        const json = await response.json();
+        return new Cargo(json.data.id, json.data.name, json.data.proprietor, json.data.contactNo, json.data.address, json.data.reference);
+      } else {
+        throw new Error("Failed to fetch cargo");
+      }
+    });
+  }
+
   async saveCargo(cargo: Cargo): Promise<Cargo> {
     return await fetch(Paths.CARGOS, {
       method: "POST",

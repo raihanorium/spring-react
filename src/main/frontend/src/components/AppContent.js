@@ -35,6 +35,7 @@ const AppContent = () => {
           <Route path="/cargo" element={<CargoLayout/>}>
             <Route index element={<CargoList/>}/>
             <Route path="new" element={<CargoForm/>}/>
+            <Route path="edit/:cargoId" element={<CargoForm/>}/>
           </Route>
           <Route path="/trip" element={<TripLayout/>}>
             <Route index element={<TripList/>}/>
