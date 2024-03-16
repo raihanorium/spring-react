@@ -14,14 +14,18 @@ import {SpinnerContainer} from "../../utils/SpinnerContainer";
 
 
 export default function TripForm() {
+
+  type CompanyOption = { label: string, value: string };
+  type CargoOption = { label: string, value: string };
+
   const tripService = useTripService();
   const companyService = useCompanyService();
   const cargoService = useCargoService();
 
   const [startDate, setStartDate] = useState<Date | null>();
   const [endDate, setEndDate] = useState<Date | null>();
-  const [companies, setCompanies] = useState<Company[]>();
-  const [cargos, setCargos] = useState<Cargo[]>();
+  const [companyOptions, setCompanyOptions] = useState<CompanyOption[]>();
+  const [cargoOptions, setCargoOptions] = useState<CargoOption[]>();
 
   const [validated, setValidated] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -59,7 +63,6 @@ export default function TripForm() {
       setSubmitting(true);
       const formData = new FormData(form);
       const trip = Trip.from(formData);
-      console.log(trip);
 
       if (tripService !== null) {
         tripService.saveTrip(trip).then(() => {
@@ -73,47 +76,39 @@ export default function TripForm() {
     }
   }
 
-  type CompanyOption = { label: string, value: string };
-  const companyOptions = companies ? companies
-      .map(company => ({label: company.name, value: company.id} as CompanyOption)) : [];
-
-  type CargoOption = { label: string, value: string };
-  const cargoOptions = cargos ? cargos
-      .map(cargo => ({label: cargo.name, value: cargo.id} as CargoOption)) : [];
-
   useEffect(() => {
     if (companyService !== null) {
       companyService.getCompanies().then((companies: Page<Company>) => {
-        setCompanies(companies.content);
+        setCompanyOptions(companies.content.map(company => ({
+          label: company.name,
+          value: company.id
+        } as CompanyOption)));
       });
     }
 
     if (cargoService !== null) {
       cargoService.getCargos().then((cargos: Page<Cargo>) => {
-        setCargos(cargos.content);
+        setCargoOptions(cargos.content.map(cargo => ({label: cargo.name, value: cargo.id} as CargoOption)));
       });
     }
+  }, [companyService, cargoService]);
 
-    if (tripId && tripService) {
+  useEffect(() => {
+    if (tripId && tripService && companyOptions && cargoOptions) {
       setLoading(true);
       tripService.getTrip(Number(tripId)).then(t => {
         if (t) {
           setTrip(t);
+          setSelectedCompanyOption(companyOptions.filter(option => option.value === t.companyId)[0]);
+          setSelectedCargoOption(cargoOptions.filter(option => option.value === t.cargoId)[0]);
+          setStartDate(t.startDate);
+          setEndDate(t.endDate);
         }
       }).finally(() => setLoading(false));
     } else {
       setTrip(null);
     }
-  }, [tripId]);
-
-  useEffect(() => {
-    if (trip && companyOptions && cargoOptions) {
-      setSelectedCompanyOption(companyOptions.filter(option => option.value === trip.companyId)[0]);
-      setSelectedCargoOption(cargoOptions.filter(option => option.value === trip.cargoId)[0]);
-      setStartDate(trip.startDate);
-      setEndDate(trip.endDate);
-    }
-  }, [trip]);
+  }, [tripId, companyOptions, cargoOptions, tripService]);
 
   return (
       <SpinnerContainer loading={loading}>
