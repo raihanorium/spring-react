@@ -8,6 +8,8 @@ import {useVoucherService} from "../../service/useService";
 import {Page} from "../../model/Page";
 import {Pagination} from "../../utils/Pagination";
 import {SpinnerContainer} from "../../utils/SpinnerContainer";
+import CIcon from "@coreui/icons-react";
+import * as icon from "@coreui/icons";
 
 export default function VoucherList() {
   const voucherService = useVoucherService();
@@ -33,6 +35,7 @@ export default function VoucherList() {
     {key: 'dr', label: 'Dr', _props: {scope: 'col'}},
     {key: 'cr', label: 'Cr', _props: {scope: 'col'}},
     {key: 'particular', label: 'Particular', _props: {scope: 'col'}},
+    {key: 'action', label: '', _props: {scope: 'col'}},
   ];
 
   return (
@@ -51,12 +54,17 @@ export default function VoucherList() {
                     <CTableDataCell>{voucher.dr?.toString()}</CTableDataCell>
                     <CTableDataCell>{voucher.cr?.toString()}</CTableDataCell>
                     <CTableDataCell>{voucher.particular}</CTableDataCell>
+                    <CTableDataCell>
+                      <Link to={'/voucher/edit/' + voucher.id}>
+                        <CIcon icon={icon.cilPenAlt} customClassName="nav-icon"/>
+                      </Link>
+                    </CTableDataCell>
                   </CTableRow>)
             })}
           </CTableBody>
           <CTableFoot>
             <CTableRow>
-              <CTableDataCell colSpan={7}>
+              <CTableDataCell colSpan={8}>
                 <Pagination page={vouchersPage} setCurrentPageNumber={setCurrentPageNumber}/>
               </CTableDataCell>
             </CTableRow>

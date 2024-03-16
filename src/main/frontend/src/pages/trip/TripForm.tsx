@@ -14,26 +14,22 @@ import {SpinnerContainer} from "../../utils/SpinnerContainer";
 
 
 export default function TripForm() {
-
-  type CompanyOption = { label: string, value: string };
-  type CargoOption = { label: string, value: string };
-
   const tripService = useTripService();
   const companyService = useCompanyService();
   const cargoService = useCargoService();
 
   const [startDate, setStartDate] = useState<Date | null>();
   const [endDate, setEndDate] = useState<Date | null>();
-  const [companyOptions, setCompanyOptions] = useState<CompanyOption[]>();
-  const [cargoOptions, setCargoOptions] = useState<CargoOption[]>();
+  const [companyOptions, setCompanyOptions] = useState<SelectionOption[]>();
+  const [cargoOptions, setCargoOptions] = useState<SelectionOption[]>();
 
   const [validated, setValidated] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
-  const [selectedCompanyOption, setSelectedCompanyOption] = useState<CompanyOption | null>(null);
+  const [selectedCompanyOption, setSelectedCompanyOption] = useState<SelectionOption | null>(null);
   const [companyValid, setCompanyValid] = useState(true);
 
-  const [selectedCargoOption, setSelectedCargoOption] = useState<CargoOption | null>(null);
+  const [selectedCargoOption, setSelectedCargoOption] = useState<SelectionOption | null>(null);
   const [cargoValid, setCargoValid] = useState(true);
 
   const navigate = useNavigate();
@@ -82,13 +78,13 @@ export default function TripForm() {
         setCompanyOptions(companies.content.map(company => ({
           label: company.name,
           value: company.id
-        } as CompanyOption)));
+        } as SelectionOption)));
       });
     }
 
     if (cargoService !== null) {
       cargoService.getCargos().then((cargos: Page<Cargo>) => {
-        setCargoOptions(cargos.content.map(cargo => ({label: cargo.name, value: cargo.id} as CargoOption)));
+        setCargoOptions(cargos.content.map(cargo => ({label: cargo.name, value: cargo.id} as SelectionOption)));
       });
     }
   }, [companyService, cargoService]);

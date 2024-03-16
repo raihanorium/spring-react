@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {FormEvent, useEffect, useState} from 'react';
 import {CButton, CCol, CForm, CFormFeedback, CFormInput, CFormLabel, CRow, CSpinner} from "@coreui/react";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {Voucher} from "../../model/Voucher";
 import "react-datepicker/dist/react-datepicker.css";
 import {DateInput} from "../../components/DateInput";
@@ -11,6 +11,7 @@ import {Cargo} from "../../model/Cargo";
 import DateUtils from "../../utils/DateUtils";
 import {useCargoService, useTripService, useVoucherService} from "../../service/useService";
 import {Page} from "../../model/Page";
+import {SpinnerContainer} from "../../utils/SpinnerContainer";
 
 
 export default function VoucherForm() {
@@ -18,27 +19,65 @@ export default function VoucherForm() {
   const tripService = useTripService();
   const cargoService = useCargoService();
 
-  const [date, setDate] = useState();
-  const [trips, setTrips] = useState<Trip[]>();
-  const [cargos, setCargos] = useState<Cargo[]>();
+  const [date, setDate] = useState<Date | null>();
+  const [tripOptions, setTripOptions] = useState<SelectionOption[]>();
+  const [cargoOptions, setCargoOptions] = useState<SelectionOption[]>();
 
   const [validated, setValidated] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
-  const [tripId, setTripId] = useState(null);
+  const [selectedTripOption, setSelectedTripOption] = useState<SelectionOption | null>(null);
   const [tripValid, setTripValid] = useState(true);
 
-  const [cargoId, setCargoId] = useState(null);
+  const [selectedCargoOption, setSelectedCargoOption] = useState<SelectionOption | null>(null);
   const [cargoValid, setCargoValid] = useState(true);
 
   const navigate = useNavigate();
 
+  const {voucherId} = useParams();
+  const [loading, setLoading] = useState<boolean>(false);
+  const [voucher, setVoucher] = useState<Voucher | null>(null);
+
+  useEffect(() => {
+    if (cargoService !== null) {
+      cargoService.getCargos().then((cargos: Page<Cargo>) => {
+        setCargoOptions(cargos.content.map(cargo => ({label: cargo.name, value: cargo.id} as SelectionOption)));
+      });
+    }
+
+    if (tripService !== null) {
+      tripService.getTrips().then((trips: Page<Trip>) => {
+        setTripOptions(trips.content.map(trip => ({
+          label: trip.from + "-" + trip.to + "-" + DateUtils.toString(trip.startDate),
+          value: trip.id
+        } as SelectionOption)));
+      });
+    }
+  }, [cargoService, tripService]);
+
+  useEffect(() => {
+    if (voucherId && voucherService && tripOptions && cargoOptions) {
+      setLoading(true);
+      voucherService.getVoucher(Number(voucherId)).then(v => {
+        if (v) {
+          setVoucher(v);
+          setSelectedTripOption(tripOptions.filter(option => option.value === v.tripId)[0]);
+          setSelectedCargoOption(cargoOptions.filter(option => option.value === v.cargoId)[0]);
+          setDate(v.date);
+        }
+      }).finally(() => setLoading(false));
+    } else {
+      setVoucher(null);
+    }
+  }, [voucherId, tripOptions, cargoOptions, voucherService]);
+
   const handleTripChange = (selectedOption: any) => {
-    setTripId(selectedOption);
+    setSelectedTripOption(selectedOption);
+    setTripValid(!!selectedOption);
   };
 
   const handleCargoChange = (selectedOption: any) => {
-    setCargoId(selectedOption);
+    setSelectedCargoOption(selectedOption);
     setCargoValid(!!selectedOption);
   };
 
@@ -47,7 +86,8 @@ export default function VoucherForm() {
     event.stopPropagation()
     const form = event.currentTarget
     setValidated(true);
-    setCargoValid(!!cargoId);
+    setCargoValid(!!selectedCargoOption);
+    setTripValid(!!selectedTripOption);
     if (form.checkValidity()) {
       setSubmitting(true);
       const formData = new FormData(form);
@@ -65,101 +105,85 @@ export default function VoucherForm() {
     }
   }
 
-  useEffect(() => {
-    if (cargoService !== null) {
-      cargoService.getCargos().then((cargos: Page<Cargo>) => {
-        setCargos(cargos.content);
-      });
-    }
-
-    if (tripService !== null) {
-      tripService.getTrips().then((trips: Page<Trip>) => {
-        setTrips(trips.content);
-      });
-    }
-  }, []);
-
-
-  const tripOptions = trips ? trips
-      .map(trip => ({
-        label: trip.from + "-" + trip.to + "-" + DateUtils.toString(trip.startDate),
-        value: trip.id
-      })) : [];
-
-  const cargoOptions = cargos ? cargos
-      .map(cargo => ({label: cargo.name, value: cargo.id})) : [];
-
   return (
-      <CForm className="row g-3 needs-validation pt-2"
-             noValidate
-             validated={validated}
-             onSubmit={handleSubmit}>
-        <CRow className="mb-3">
-          <CCol>
-            <CFormLabel htmlFor="cargoId">Cargo</CFormLabel>
-            <Select name="cargoId" id="cargoId" options={cargoOptions} isClearable={true} required
-                    onChange={handleCargoChange}
-                    styles={{
-                      control: (baseStyles, state) => ({
-                        ...baseStyles,
-                        borderColor: validated ? (cargoValid ? '#2eb85c' : 'red') : 'gray',
-                      }),
-                    }}/>
-            <CFormFeedback invalid style={{display: cargoValid ? 'none' : 'block'}}>
-              Please select a cargo.
-            </CFormFeedback>
-          </CCol>
-        </CRow>
-        <CRow className="mb-3">
-          <CCol>
-            <CFormLabel htmlFor="tripId">Trip</CFormLabel>
-            <Select name="tripId" id="tripId" options={tripOptions} isClearable={true}
-                    onChange={handleTripChange}
-                    styles={{
-                      control: (baseStyles, state) => ({
-                        ...baseStyles,
-                        borderColor: validated ? (tripValid ? '#2eb85c' : 'red') : 'gray',
-                      }),
-                    }}/>
-            <CFormFeedback invalid style={{display: tripValid ? 'none' : 'block'}}>
-              Trip is not valid
-            </CFormFeedback>
-          </CCol>
-        </CRow>
-        <CRow className="mb-3">
-          <CCol>
-            <CFormInput name="voucherNo" type="text" id="voucherNo" label="Voucher No" required
-                        feedbackInvalid="Enter the voucher number"/>
-          </CCol>
-          <CCol>
-            <DateInput id="date" controlName="date" label="Date" requiredField={true}
-                       invalidFeedback="Enter voucher date" dateValue={date} setDateValue={setDate}/>
-          </CCol>
-        </CRow>
-        <CRow className="mb-3">
-          <CCol>
-            <CFormInput name="dr" type="number" id="dr" label="Dr" required
-                        feedbackInvalid="Enter the Debit amount"/>
-          </CCol>
-          <CCol>
-            <CFormInput name="cr" type="number" id="cr" label="Cr" required
-                        feedbackInvalid="Enter the Credit amount"/>
-          </CCol>
-        </CRow>
-        <CRow className="mb-3">
-          <CCol>
-            <CFormInput name="particular" type="text" id="particular" label="Particular" required autoComplete="on"
-                        feedbackInvalid="Enter the voucher particular"/>
-          </CCol>
-        </CRow>
-        <CRow className="mb-3">
-          <CCol>
-            <CButton color="primary" type="submit" disabled={submitting}>
-              {submitting && <CSpinner component="span" size="sm" aria-hidden="true" className="me-2"/>}
-              Save
-            </CButton>
-          </CCol>
-        </CRow>
-      </CForm>
+      <SpinnerContainer loading={loading}>
+        <CForm className="row g-3 needs-validation pt-2"
+               noValidate
+               validated={validated}
+               onSubmit={handleSubmit}>
+          <CRow className="mb-3">
+            <CCol>
+              {voucherId && <CFormInput name="id" type="hidden" id="id" value={voucherId}/>}
+
+              <CFormLabel htmlFor="cargoId">Cargo</CFormLabel>
+              <Select name="cargoId" id="cargoId" options={cargoOptions} isClearable={true} required
+                      onChange={handleCargoChange}
+                      value={selectedCargoOption}
+                      styles={{
+                        control: (baseStyles, state) => ({
+                          ...baseStyles,
+                          borderColor: validated ? (cargoValid ? '#2eb85c' : 'red') : 'gray',
+                        }),
+                      }}/>
+              <CFormFeedback invalid style={{display: cargoValid ? 'none' : 'block'}}>
+                Please select a cargo.
+              </CFormFeedback>
+            </CCol>
+          </CRow>
+          <CRow className="mb-3">
+            <CCol>
+              <CFormLabel htmlFor="tripId">Trip</CFormLabel>
+              <Select name="tripId" id="tripId" options={tripOptions} isClearable={true}
+                      onChange={handleTripChange}
+                      value={selectedTripOption}
+                      styles={{
+                        control: (baseStyles, state) => ({
+                          ...baseStyles,
+                          borderColor: validated ? (tripValid ? '#2eb85c' : 'red') : 'gray',
+                        }),
+                      }}/>
+              <CFormFeedback invalid style={{display: tripValid ? 'none' : 'block'}}>
+                Trip is not valid
+              </CFormFeedback>
+            </CCol>
+          </CRow>
+          <CRow className="mb-3">
+            <CCol>
+              <CFormInput name="voucherNo" type="text" id="voucherNo" label="Voucher No" required
+                          feedbackInvalid="Enter the voucher number" defaultValue={voucher?.voucherNo ?? undefined}/>
+            </CCol>
+            <CCol>
+              <DateInput id="date" controlName="date" label="Date" requiredField={true}
+                         invalidFeedback="Enter voucher date" dateValue={date} setDateValue={setDate}/>
+            </CCol>
+          </CRow>
+          <CRow className="mb-3">
+            <CCol>
+              <CFormInput name="dr" type="number" id="dr" label="Dr" required
+                          feedbackInvalid="Enter the Debit amount" defaultValue={voucher?.dr?.toString() ?? undefined}/>
+            </CCol>
+            <CCol>
+              <CFormInput name="cr" type="number" id="cr" label="Cr" required
+                          feedbackInvalid="Enter the Credit amount"
+                          defaultValue={voucher?.cr?.toString() ?? undefined}/>
+            </CCol>
+          </CRow>
+          <CRow className="mb-3">
+            <CCol>
+              <CFormInput name="particular" type="text" id="particular" label="Particular" required autoComplete="on"
+                          feedbackInvalid="Enter the voucher particular"
+                          defaultValue={voucher?.particular ?? undefined}/>
+            </CCol>
+          </CRow>
+          <CRow className="mb-3">
+            <CCol>
+              <CButton color="primary" type="submit" disabled={submitting}>
+                {submitting && <CSpinner component="span" size="sm" aria-hidden="true" className="me-2"/>}
+                Save
+              </CButton>
+            </CCol>
+          </CRow>
+        </CForm>
+      </SpinnerContainer>
   );
 }

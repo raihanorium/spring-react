@@ -45,6 +45,7 @@ const AppContent = () => {
           <Route path="/voucher" element={<VoucherLayout/>}>
             <Route index element={<VoucherList/>}/>
             <Route path="new" element={<VoucherForm/>}/>
+            <Route path="edit/:voucherId" element={<VoucherForm/>}/>
           </Route>
         </Routes>
       </Suspense>

@@ -20,6 +20,17 @@ export class VoucherServiceImpl implements VoucherService {
     });
   }
 
+  async getVoucher(id: number): Promise<Voucher> {
+    return await fetch(`${Paths.VOUCHERS}/${id}`).then(async response => {
+      if (response.ok) {
+        const json = await response.json();
+        return new Voucher(json.data.id, json.data.cargo?.id, json.data.trip?.id, json.data.voucherNo, new Date(json.data.date), json.data.dr, json.data.cr, json.data.particular);
+      } else {
+        throw new Error("Failed to fetch voucher");
+      }
+    });
+  }
+
   async saveVoucher(voucher: Voucher): Promise<Voucher> {
     return await fetch(Paths.VOUCHERS, {
       method: "POST",
