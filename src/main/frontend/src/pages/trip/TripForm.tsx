@@ -59,6 +59,7 @@ export default function TripForm() {
       setSubmitting(true);
       const formData = new FormData(form);
       const trip = Trip.from(formData);
+      console.log(trip);
 
       if (tripService !== null) {
         tripService.saveTrip(trip).then(() => {
@@ -122,6 +123,8 @@ export default function TripForm() {
                onSubmit={handleSubmit}>
           <CRow className="mb-3">
             <CCol>
+              {tripId && <CFormInput name="id" type="hidden" id="id" value={tripId}/>}
+
               <CFormLabel htmlFor="companyId">Company</CFormLabel>
               <Select name="companyId" id="companyId" options={companyOptions} isClearable={true} required
                       onChange={handleCompanyChange}

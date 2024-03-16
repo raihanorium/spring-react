@@ -52,10 +52,11 @@ public class VoucherController {
     }
 
     @PostMapping
-    public ResponseEntity<Response<Voucher>> createVoucher(@RequestBody VoucherDto voucherDto) {
+    public ResponseEntity<Response<Voucher>> saveVoucher(@RequestBody VoucherDto voucherDto) {
         Cargo cargo = cargoService.findById(voucherDto.getCargoId()).orElseThrow(CargoNotFoundException::new);
         Trip trip = Objects.isNull(voucherDto.getTripId()) ? null : tripService.findById(voucherDto.getTripId()).orElseThrow(TripNotFoundException::new);
         Voucher voucher = Voucher.builder()
+                .id(voucherDto.getId())
                 .cargo(cargo)
                 .trip(trip)
                 .voucherNo(voucherDto.getVoucherNo())

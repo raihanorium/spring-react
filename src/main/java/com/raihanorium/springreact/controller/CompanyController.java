@@ -41,7 +41,7 @@ public class CompanyController {
     }
 
     @PostMapping
-    public ResponseEntity<Response<Company>> createCompany(@RequestBody Company company) {
+    public ResponseEntity<Response<Company>> saveCompany(@RequestBody Company company) {
         return ResponseEntity.ok(Response.<Company>builder()
                 .success(true)
                 .data(companyService.save(company))

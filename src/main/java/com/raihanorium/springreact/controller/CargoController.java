@@ -41,7 +41,7 @@ public class CargoController {
     }
 
     @PostMapping
-    public ResponseEntity<Response<Cargo>> createCargo(@RequestBody Cargo cargo) {
+    public ResponseEntity<Response<Cargo>> saveCargo(@RequestBody Cargo cargo) {
         return ResponseEntity.ok(Response.<Cargo>builder()
                 .success(true)
                 .data(cargoService.save(cargo))

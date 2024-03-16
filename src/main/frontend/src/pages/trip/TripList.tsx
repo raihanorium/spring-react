@@ -21,7 +21,7 @@ export default function TripList() {
   useEffect(() => {
     if (tripService !== null) {
       setLoading(true);
-      tripService.getTrips().then((trips: Page<Trip>) => {
+      tripService.getTrips(currentPageNumber).then((trips: Page<Trip>) => {
         setTripsPage(trips);
       }).finally(() => setLoading(false));
     }

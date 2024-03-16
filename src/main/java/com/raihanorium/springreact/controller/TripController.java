@@ -49,10 +49,11 @@ public class TripController {
     }
 
     @PostMapping
-    public ResponseEntity<Response<Trip>> createCTrip(@RequestBody TripDto tripDto) {
+    public ResponseEntity<Response<Trip>> saveTrip(@RequestBody TripDto tripDto) {
         Company company = companyService.findById(tripDto.getCompanyId()).orElseThrow(CompanyNotFoundException::new);
         Cargo cargo = cargoService.findById(tripDto.getCargoId()).orElseThrow(CargoNotFoundException::new);
         Trip trip = Trip.builder()
+                .id(tripDto.getId())
                 .company(company)
                 .cargo(cargo)
                 .startDate(tripDto.getStartDate())
