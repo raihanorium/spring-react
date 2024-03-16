@@ -8,7 +8,8 @@ import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,7 +36,7 @@ public class CompanyController {
                                                                 @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(Response.<Page<Company>>builder()
                 .success(true)
-                .data(companyService.findAll(Pageable.ofSize(size).withPage(page)))
+                .data(companyService.findAll(PageRequest.of(page, size, Sort.by("id").descending())))
                 .code(HttpStatus.OK)
                 .build());
     }
