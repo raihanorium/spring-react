@@ -7,6 +7,7 @@ import {CompanyForm, CompanyLayout, CompanyList} from "../pages/company";
 import {CargoForm, CargoLayout, CargoList} from "../pages/cargo";
 import {TripForm, TripLayout, TripList} from "../pages/trip";
 import {VoucherForm, VoucherLayout, VoucherList} from "../pages/voucher";
+import DataManagementPage from "../pages/data-management/DataManagementPage";
 
 const AppContent = () => {
   return (
@@ -47,6 +48,7 @@ const AppContent = () => {
             <Route path="new" element={<VoucherForm/>}/>
             <Route path="edit/:voucherId" element={<VoucherForm/>}/>
           </Route>
+          <Route path="/data-management" element={<DataManagementPage/>}/>
         </Routes>
       </Suspense>
   )

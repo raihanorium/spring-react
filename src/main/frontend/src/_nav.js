@@ -44,6 +44,12 @@ const _nav = [
         to: '/voucher',
         icon: <CIcon icon={cilDescription} customClassName="nav-icon"/>
     },
+    {
+        component: CNavItem,
+        name: 'Data Management',
+        to: '/data-management',
+        icon: <CIcon icon={cilDescription} customClassName="nav-icon"/>
+    },
 ]
 
 export default _nav
