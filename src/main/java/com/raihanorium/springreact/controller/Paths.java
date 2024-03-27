@@ -7,4 +7,5 @@ public interface Paths {
     String CARGOS = REST_API_BASE + "/cargos";
     String TRIPS = REST_API_BASE + "/trips";
     String VOUCHERS = REST_API_BASE + "/vouchers";
+    String DATA_MANAGEMENT = REST_API_BASE + "/data-management";
 }

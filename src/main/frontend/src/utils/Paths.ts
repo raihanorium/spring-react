@@ -4,4 +4,5 @@ export class Paths {
     public static CARGOS: string = Paths.API_BASE + "/cargos";
     public static TRIPS: string = Paths.API_BASE + "/trips";
     public static VOUCHERS: string = Paths.API_BASE + "/vouchers";
+    public static IMPORT_DATA: string = Paths.API_BASE + "/import";
 }

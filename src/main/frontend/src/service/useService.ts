@@ -7,6 +7,8 @@ import {TripService} from "./TripService";
 import {TripServiceImpl} from "./impl/TripServiceImpl";
 import {VoucherService} from "./VoucherService";
 import {VoucherServiceImpl} from "./impl/VoucherServiceImpl";
+import {DataManagementService} from "./DataManagementService";
+import {DataManagementServiceImpl} from "./impl/DataManagementServiceImpl";
 
 export const useCompanyService = (): CompanyService | null => {
     return useMemo((): CompanyService | null => {
@@ -29,5 +31,11 @@ export const useTripService = (): TripService | null => {
 export const useVoucherService = (): VoucherService | null => {
     return useMemo((): VoucherService | null => {
         return new VoucherServiceImpl();
+    }, []);
+};
+
+export const useDataManagementService = (): DataManagementService | null => {
+    return useMemo((): DataManagementService | null => {
+        return new DataManagementServiceImpl();
     }, []);
 };
