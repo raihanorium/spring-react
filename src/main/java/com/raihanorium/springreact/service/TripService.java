@@ -12,4 +12,6 @@ public interface TripService {
     Page<Trip> findAll(Pageable pageable);
 
     Trip save(Trip trip);
+
+    void deleteAll();
 }

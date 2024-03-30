@@ -25,6 +25,11 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    public Optional<Company> findByName(String companyName) {
+        return companyRepository.findByName(companyName);
+    }
+
+    @Override
     public Page<Company> findAll(Pageable pageable) {
         return companyRepository.findAll(pageable);
     }
@@ -32,5 +37,10 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public Company save(Company company) {
         return companyRepository.save(company);
+    }
+
+    @Override
+    public void deleteAll() {
+        companyRepository.deleteAll();
     }
 }

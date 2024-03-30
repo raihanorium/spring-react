@@ -3,7 +3,6 @@ import {FormEvent, useState} from 'react';
 import {CButton, CCard, CCardBody, CCardHeader, CCol, CForm, CFormInput, CRow, CSpinner} from "@coreui/react";
 import {SpinnerContainer} from "../../utils/SpinnerContainer";
 import {useDataManagementService} from "../../service/useService";
-import {ImportForm} from "../../model/ImportForm";
 import {useNavigate} from "react-router-dom";
 
 export default function DataManagementPage() {
@@ -22,14 +21,17 @@ export default function DataManagementPage() {
     if (form.checkValidity()) {
       setLoadingImport(true);
       const formData = new FormData(form);
-      const importForm = ImportForm.from(formData);
-
       if (dataManagementService !== null) {
-        dataManagementService.importData(importForm).then(() => {
+        dataManagementService.importData(formData).then((response) => {
+          alert(response);
           navigate("/data-management");
         }).catch(reason => {
           alert(reason);
           setLoadingImport(false)
+        }).finally(() => {
+          form.reset();
+          setValidated(false);
+          setLoadingImport(false);
         });
         return;
       }
@@ -54,7 +56,7 @@ export default function DataManagementPage() {
                          onSubmit={handleSubmit}>
                     <CRow className="mb-3">
                       <CCol>
-                        <CFormInput type="file" id="importFile" name="import-file" label="Import xlsx file" required/>
+                        <CFormInput type="file" id="importFile" name="file" label="Import xlsx file" required/>
                       </CCol>
                     </CRow>
                     <CRow className="mb-3">

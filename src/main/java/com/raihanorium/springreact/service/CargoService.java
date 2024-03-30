@@ -9,7 +9,11 @@ import java.util.Optional;
 public interface CargoService {
     Optional<Cargo> findById(Long id);
 
+    Optional<Cargo> findByName(String cargoName);
+
     Page<Cargo> findAll(Pageable pageable);
 
     Cargo save(Cargo cargo);
+
+    void deleteAll();
 }

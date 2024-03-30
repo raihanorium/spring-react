@@ -33,4 +33,9 @@ public class TripServiceImpl implements TripService {
     public Trip save(Trip trip) {
         return tripRepository.save(trip);
     }
+
+    @Override
+    public void deleteAll() {
+        tripRepository.deleteAll();
+    }
 }

@@ -25,6 +25,11 @@ public class CargoServiceImpl implements CargoService {
     }
 
     @Override
+    public Optional<Cargo> findByName(String cargoName) {
+        return cargoRepository.findByName(cargoName);
+    }
+
+    @Override
     public Page<Cargo> findAll(Pageable pageable) {
         return cargoRepository.findAll(pageable);
     }
@@ -32,5 +37,10 @@ public class CargoServiceImpl implements CargoService {
     @Override
     public Cargo save(Cargo cargo) {
         return cargoRepository.save(cargo);
+    }
+
+    @Override
+    public void deleteAll() {
+        cargoRepository.deleteAll();
     }
 }
