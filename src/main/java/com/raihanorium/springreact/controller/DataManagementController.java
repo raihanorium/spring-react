@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Log4j2
 public class DataManagementController {
 
-    @Nonnull private final ThreadPoolTaskExecutor taskExecutor;
+    @Nonnull private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
     @Nonnull private final DataManagementService dataManagementService;
 
     @PostMapping(path = "/import")
@@ -32,7 +32,7 @@ public class DataManagementController {
                     .build());
         }
 
-        taskExecutor.execute(() -> dataManagementService.importData(importDto.getFileName(), importDto.getFile()));
+        threadPoolTaskExecutor.execute(() -> dataManagementService.importData(importDto.getFileName(), importDto.getFile()));
 
         return ResponseEntity.ok(Response.<String>builder()
                 .success(true)

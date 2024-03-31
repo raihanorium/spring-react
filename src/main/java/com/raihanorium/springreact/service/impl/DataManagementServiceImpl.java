@@ -17,9 +17,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Nonnull)
@@ -37,13 +37,40 @@ public class DataManagementServiceImpl implements DataManagementService {
     @Override
     public void importData(String fileName, MultipartFile file) {
         try {
-            InputStream in = file.getInputStream();
-            Workbook workbook = new XSSFWorkbook(in);
-            importCompanies(workbook);
-            importCargos(workbook);
-            importTrips(workbook);
+            File tmpFile = createTempFile(file);
+            try (InputStream in = new FileInputStream(tmpFile)) {
+                Workbook workbook = new XSSFWorkbook(in);
+                importCompanies(workbook);
+                importCargos(workbook);
+                importTrips(workbook);
+            }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error occurred while importing data", e);
+        } finally {
+            deleteTempFile(file);
+        }
+    }
+
+    private void deleteTempFile(MultipartFile file) {
+        File tmpFile = new File("tmp", Objects.requireNonNull(file.getOriginalFilename()));
+        if (!tmpFile.delete()) {
+            log.error("Failed to delete temporary file");
+        }
+    }
+
+    private File createTempFile(MultipartFile file) throws IOException {
+        File directory = new File("tmp");
+        if (!directory.exists() && !directory.mkdirs()) {
+            throw new RuntimeException("Failed to create directory");
+        }
+        File tmpFile = new File(directory, Objects.requireNonNull(file.getOriginalFilename()));
+        if (tmpFile.createNewFile()) {
+            try (OutputStream os = new FileOutputStream(tmpFile)) {
+                os.write(file.getBytes());
+            }
+            return tmpFile;
+        } else {
+            throw new IOException("Failed to create temporary file");
         }
     }
 
