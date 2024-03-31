@@ -52,14 +52,14 @@ public class DataManagementServiceImpl implements DataManagementService {
     }
 
     private void deleteTempFile(MultipartFile file) {
-        File tmpFile = new File("tmp", Objects.requireNonNull(file.getOriginalFilename()));
+        File tmpFile = new File("~/src/main/tmp", Objects.requireNonNull(file.getOriginalFilename()));
         if (!tmpFile.delete()) {
             log.error("Failed to delete temporary file");
         }
     }
 
     private File createTempFile(MultipartFile file) throws IOException {
-        File directory = new File("tmp");
+        File directory = new File("~/src/main/tmp");
         if (!directory.exists() && !directory.mkdirs()) {
             throw new RuntimeException("Failed to create directory");
         }
