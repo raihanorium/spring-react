@@ -8,31 +8,100 @@ type Props = {
 };
 
 export function Pagination(props: Props) {
-  const numberOfPages = props.page?.totalElements ? Math.ceil(props.page.totalElements / props.page.size) : 0;
-  const pageNumbers = Array.from(Array(numberOfPages).keys());
+  const { page, setCurrentPageNumber } = props;
+  const numberOfPages = page?.totalElements ? Math.ceil(page.totalElements / page.size) : 0;
+  const currentPage = page?.number || 0;
+
+  // If there is only one page, return null to hide the pagination
+  if (numberOfPages <= 1) {
+    return null;
+  }
+
+  const renderPaginationItems = () => {
+    const paginationItems = [];
+    const maxButtons = 10; // Maximum number of buttons to show
+
+    // Start and end page numbers for the pagination
+    let startPage = Math.max(0, currentPage - Math.floor(maxButtons / 2));
+    let endPage = Math.min(numberOfPages - 1, startPage + maxButtons - 1);
+
+    // Adjust start and end page numbers if at the beginning or end
+    if (endPage - startPage + 1 < maxButtons) {
+      startPage = Math.max(0, endPage - maxButtons + 1);
+    }
+
+    // Add "Jump to Beginning" button
+    if (currentPage > 0) {
+      paginationItems.push(
+          <CPaginationItem
+              key="jump-to-beginning"
+              onClick={() => setCurrentPageNumber(0)}
+              style={{ cursor: 'pointer' }}
+          >
+            <span aria-hidden="true">&laquo;&laquo;</span>
+          </CPaginationItem>
+      );
+    }
+
+    // Add "Previous" button
+    if (currentPage > 0) {
+      paginationItems.push(
+          <CPaginationItem
+              key="prev"
+              onClick={() => setCurrentPageNumber(currentPage - 1)}
+              style={{ cursor: 'pointer' }}
+          >
+            <span aria-hidden="true">&laquo;</span>
+          </CPaginationItem>
+      );
+    }
+
+    // Add pagination buttons
+    for (let i = startPage; i <= endPage; i++) {
+      paginationItems.push(
+          <CPaginationItem
+              key={i}
+              onClick={() => setCurrentPageNumber(i)}
+              active={currentPage === i}
+              style={{ cursor: 'pointer' }}
+          >
+            {i + 1}
+          </CPaginationItem>
+      );
+    }
+
+    // Add "Next" button
+    if (currentPage < numberOfPages - 1) {
+      paginationItems.push(
+          <CPaginationItem
+              key="next"
+              onClick={() => setCurrentPageNumber(currentPage + 1)}
+              style={{ cursor: 'pointer' }}
+          >
+            <span aria-hidden="true">&raquo;</span>
+          </CPaginationItem>
+      );
+    }
+
+    // Add "Jump to End" button
+    if (currentPage < numberOfPages - 1) {
+      paginationItems.push(
+          <CPaginationItem
+              key="jump-to-end"
+              onClick={() => setCurrentPageNumber(numberOfPages - 1)}
+              style={{ cursor: 'pointer' }}
+          >
+            <span aria-hidden="true">&raquo;&raquo;</span>
+          </CPaginationItem>
+      );
+    }
+
+    return paginationItems;
+  };
 
   return (
       <CPagination align="center" aria-label="Page navigation example">
-        <CPaginationItem disabled={props.page?.number === 0}
-                         style={(props.page?.number !== 0) ? {cursor: 'pointer'} : undefined}
-                         onClick={() => props.setCurrentPageNumber(0)}>
-          <span aria-hidden="true">&laquo;</span>
-        </CPaginationItem>
-        {
-          pageNumbers.map(pageNumber => {
-            return (
-                <CPaginationItem key={pageNumber} onClick={() => props.setCurrentPageNumber(pageNumber)}
-                                 active={props.page?.number === pageNumber} style={{cursor: 'pointer'}}>
-                  {pageNumber + 1}
-                </CPaginationItem>
-            );
-          })
-        }
-        <CPaginationItem disabled={props.page?.number === (numberOfPages - 1)}
-                         style={(props.page?.number !== (numberOfPages - 1)) ? {cursor: 'pointer'} : undefined}
-                         onClick={() => props.setCurrentPageNumber((numberOfPages - 1))}>
-          <span aria-hidden="true">&raquo;</span>
-        </CPaginationItem>
+        {renderPaginationItems()}
       </CPagination>
   );
 }

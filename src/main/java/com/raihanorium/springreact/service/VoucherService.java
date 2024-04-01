@@ -12,4 +12,6 @@ public interface VoucherService {
     Page<Voucher> findAll(Pageable pageable);
 
     Voucher save(Voucher voucher);
+
+    void deleteAll();
 }

@@ -33,4 +33,9 @@ public class VoucherServiceImpl implements VoucherService {
     public Voucher save(Voucher voucher) {
         return voucherRepository.save(voucher);
     }
+
+    @Override
+    public void deleteAll() {
+        voucherRepository.deleteAll();
+    }
 }

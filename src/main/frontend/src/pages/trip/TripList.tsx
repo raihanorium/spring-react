@@ -8,8 +8,6 @@ import {useTripService} from "../../service/useService";
 import {Page} from "../../model/Page";
 import {Pagination} from "../../utils/Pagination";
 import {SpinnerContainer} from "../../utils/SpinnerContainer";
-import CIcon from "@coreui/icons-react";
-import * as icon from "@coreui/icons";
 
 export default function TripList() {
   const tripService = useTripService();
@@ -53,9 +51,7 @@ export default function TripList() {
                     <CTableDataCell>{trip.from}</CTableDataCell>
                     <CTableDataCell>{trip.to}</CTableDataCell>
                     <CTableDataCell>
-                      <Link to={'/trip/edit/' + trip.id}>
-                        <CIcon icon={icon.cilPenAlt} customClassName="nav-icon"/>
-                      </Link>
+                      <Link to={'/trip/edit/' + trip.id}>Edit</Link>
                     </CTableDataCell>
                   </CTableRow>)
             })}

@@ -3,10 +3,8 @@ package com.raihanorium.springreact.service.impl;
 import com.raihanorium.springreact.model.Cargo;
 import com.raihanorium.springreact.model.Company;
 import com.raihanorium.springreact.model.Trip;
-import com.raihanorium.springreact.service.CargoService;
-import com.raihanorium.springreact.service.CompanyService;
-import com.raihanorium.springreact.service.DataManagementService;
-import com.raihanorium.springreact.service.TripService;
+import com.raihanorium.springreact.model.Voucher;
+import com.raihanorium.springreact.service.*;
 import jakarta.annotation.Nonnull;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +12,7 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,6 +31,11 @@ public class DataManagementServiceImpl implements DataManagementService {
     private final CargoService cargoService;
     @Nonnull
     private final TripService tripService;
+    @Nonnull
+    private final VoucherService voucherService;
+
+    @Value("${application.upload.directory}")
+    private String uploadDirectory;
 
     @Transactional
     @Override
@@ -43,6 +47,7 @@ public class DataManagementServiceImpl implements DataManagementService {
                 importCompanies(workbook);
                 importCargos(workbook);
                 importTrips(workbook);
+                importVouchers(workbook);
             }
         } catch (IOException e) {
             throw new RuntimeException("Error occurred while importing data", e);
@@ -52,14 +57,14 @@ public class DataManagementServiceImpl implements DataManagementService {
     }
 
     private void deleteTempFile(MultipartFile file) {
-        File tmpFile = new File("~/src/main/tmp", Objects.requireNonNull(file.getOriginalFilename()));
+        File tmpFile = new File(uploadDirectory, Objects.requireNonNull(file.getOriginalFilename()));
         if (!tmpFile.delete()) {
             log.error("Failed to delete temporary file");
         }
     }
 
     private File createTempFile(MultipartFile file) throws IOException {
-        File directory = new File("~/src/main/tmp");
+        File directory = new File(uploadDirectory);
         if (!directory.exists() && !directory.mkdirs()) {
             throw new RuntimeException("Failed to create directory");
         }
@@ -132,6 +137,35 @@ public class DataManagementServiceImpl implements DataManagementService {
             }
         }
         log.info("Done importing trips.");
+    }
+
+    private void importVouchers(Workbook workbook) {
+        voucherService.deleteAll();
+        Sheet sheet = workbook.getSheet("Voucher");
+        for (Row row : sheet) {
+            if (isNotBlank(row) && isNotHeaderRow(row)) {
+                cargoService.findByName(row.getCell(3).getStringCellValue().trim()).ifPresent(cargo -> {
+                    String tripValue = StringUtils.defaultIfBlank(row.getCell(1).getStringCellValue().trim(), null);
+                    Trip trip = null;
+                    if (StringUtils.isNoneBlank(tripValue)) {
+                        Long tripId = StringUtils.trimToNull(tripValue.split(" ")[0]) != null ?
+                                Long.parseLong(tripValue.split(" ")[0]) : null;
+                        trip = tripId != null ? tripService.findById(tripId).orElse(null) : null;
+                    }
+                    Voucher voucher = Voucher.builder()
+                            .cargo(cargo)
+                            .trip(trip)
+                            .voucherNo(row.getCell(2).getStringCellValue().trim())
+                            .date(getDateValue(row.getCell(4)))
+                            .dr(row.getCell(5).getNumericCellValue())
+                            .cr(row.getCell(6).getNumericCellValue())
+                            .particular(row.getCell(7).getStringCellValue())
+                            .build();
+                    voucherService.save(voucher);
+                });
+            }
+        }
+        log.info("Done importing vouchers.");
     }
 
     private static LocalDate getDateValue(Cell cell) {

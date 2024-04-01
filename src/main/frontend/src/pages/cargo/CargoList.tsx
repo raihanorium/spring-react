@@ -7,8 +7,6 @@ import {useCargoService} from "../../service/useService";
 import {Page} from "../../model/Page";
 import {Pagination} from "../../utils/Pagination";
 import {SpinnerContainer} from "../../utils/SpinnerContainer";
-import CIcon from "@coreui/icons-react";
-import * as icon from "@coreui/icons";
 
 export default function CargoList() {
   const cargoService = useCargoService();
@@ -50,9 +48,7 @@ export default function CargoList() {
                     <CTableDataCell>{cargo.address}</CTableDataCell>
                     <CTableDataCell>{cargo.reference}</CTableDataCell>
                     <CTableDataCell>
-                      <Link to={'/cargo/edit/' + cargo.id}>
-                        <CIcon icon={icon.cilPenAlt} customClassName="nav-icon"/>
-                      </Link>
+                      <Link to={'/cargo/edit/' + cargo.id}>Edit</Link>
                     </CTableDataCell>
                   </CTableRow>)
             })}

@@ -8,8 +8,6 @@ import {useVoucherService} from "../../service/useService";
 import {Page} from "../../model/Page";
 import {Pagination} from "../../utils/Pagination";
 import {SpinnerContainer} from "../../utils/SpinnerContainer";
-import CIcon from "@coreui/icons-react";
-import * as icon from "@coreui/icons";
 
 export default function VoucherList() {
   const voucherService = useVoucherService();
@@ -55,9 +53,7 @@ export default function VoucherList() {
                     <CTableDataCell>{voucher.cr?.toString()}</CTableDataCell>
                     <CTableDataCell>{voucher.particular}</CTableDataCell>
                     <CTableDataCell>
-                      <Link to={'/voucher/edit/' + voucher.id}>
-                        <CIcon icon={icon.cilPenAlt} customClassName="nav-icon"/>
-                      </Link>
+                      <Link to={'/voucher/edit/' + voucher.id}>Edit</Link>
                     </CTableDataCell>
                   </CTableRow>)
             })}
