@@ -2,6 +2,10 @@ package com.raihanorium.springreact.service;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+
 public interface DataManagementService {
-    void importData(String fileName, MultipartFile file);
+
+    File createTempFile(MultipartFile file);
+    void importData(String fileName, File file);
 }

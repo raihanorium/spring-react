@@ -34,15 +34,15 @@ public class DataManagementServiceImpl implements DataManagementService {
     @Nonnull
     private final VoucherService voucherService;
 
-    @Value("${application.upload.directory}")
-    private String uploadDirectory;
+    @Value("${application.upload.temporary.directory}")
+    private String tempDirectory;
 
     @Transactional
     @Override
-    public void importData(String fileName, MultipartFile file) {
+    public void importData(String fileName, File file) {
         try {
-            File tmpFile = createTempFile(file);
-            try (InputStream in = new FileInputStream(tmpFile)) {
+            cleanupData();
+            try (InputStream in = new FileInputStream(file)) {
                 Workbook workbook = new XSSFWorkbook(in);
                 importCompanies(workbook);
                 importCargos(workbook);
@@ -56,31 +56,38 @@ public class DataManagementServiceImpl implements DataManagementService {
         }
     }
 
-    private void deleteTempFile(MultipartFile file) {
-        File tmpFile = new File(uploadDirectory, Objects.requireNonNull(file.getOriginalFilename()));
-        if (!tmpFile.delete()) {
-            log.error("Failed to delete temporary file");
+    private void cleanupData() {
+        voucherService.deleteAll();
+        tripService.deleteAll();
+        cargoService.deleteAll();
+        companyService.deleteAll();
+    }
+
+    private void deleteTempFile(File file) {
+        if (!file.delete()) {
+            throw new RuntimeException("Failed to delete temporary file");
         }
     }
 
-    private File createTempFile(MultipartFile file) throws IOException {
-        File directory = new File(uploadDirectory);
+    public File createTempFile(MultipartFile file) {
+        File directory = new File(tempDirectory);
         if (!directory.exists() && !directory.mkdirs()) {
             throw new RuntimeException("Failed to create directory");
         }
         File tmpFile = new File(directory, Objects.requireNonNull(file.getOriginalFilename()));
-        if (tmpFile.createNewFile()) {
-            try (OutputStream os = new FileOutputStream(tmpFile)) {
-                os.write(file.getBytes());
+        try {
+            if (tmpFile.createNewFile()) {
+                try (OutputStream os = new FileOutputStream(tmpFile)) {
+                    os.write(file.getBytes());
+                }
             }
-            return tmpFile;
-        } else {
-            throw new IOException("Failed to create temporary file");
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to create temporary file");
         }
+        return tmpFile;
     }
 
     private void importCompanies(Workbook workbook) {
-        companyService.deleteAll();
         Sheet sheet = workbook.getSheet("Company");
         for (Row row : sheet) {
             if (isNotBlank(row) && isNotHeaderRow(row)) {
@@ -97,7 +104,6 @@ public class DataManagementServiceImpl implements DataManagementService {
     }
 
     private void importCargos(Workbook workbook) {
-        cargoService.deleteAll();
         Sheet sheet = workbook.getSheet("Cargo");
         for (Row row : sheet) {
             if (isNotBlank(row) && isNotHeaderRow(row)) {
@@ -117,7 +123,6 @@ public class DataManagementServiceImpl implements DataManagementService {
     }
 
     private void importTrips(Workbook workbook) {
-        tripService.deleteAll();
         Sheet sheet = workbook.getSheet("Trip");
         for (Row row : sheet) {
             if (isNotBlank(row) && isNotHeaderRow(row)) {
@@ -140,7 +145,6 @@ public class DataManagementServiceImpl implements DataManagementService {
     }
 
     private void importVouchers(Workbook workbook) {
-        voucherService.deleteAll();
         Sheet sheet = workbook.getSheet("Voucher");
         for (Row row : sheet) {
             if (isNotBlank(row) && isNotHeaderRow(row)) {

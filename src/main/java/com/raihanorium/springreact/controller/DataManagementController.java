@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.File;
+
 @RestController
 @RequestMapping(Paths.DATA_MANAGEMENT)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -31,8 +33,8 @@ public class DataManagementController {
                     .message("File is empty or not provided")
                     .build());
         }
-
-        threadPoolTaskExecutor.execute(() -> dataManagementService.importData(importDto.getFileName(), importDto.getFile()));
+        File tempFile = dataManagementService.createTempFile(importDto.getFile());
+        threadPoolTaskExecutor.execute(() -> dataManagementService.importData(importDto.getFileName(), tempFile));
 
         return ResponseEntity.ok(Response.<String>builder()
                 .success(true)
