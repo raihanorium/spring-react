@@ -11,6 +11,7 @@ import {Cargo} from "../../model/Cargo";
 import {useCargoService, useCompanyService, useTripService} from "../../service/useService";
 import {Page} from "../../model/Page";
 import {SpinnerContainer} from "../../utils/SpinnerContainer";
+import {PageParams} from "../../model/PageParams";
 
 
 export default function TripForm() {
@@ -83,7 +84,7 @@ export default function TripForm() {
     }
 
     if (cargoService !== null) {
-      cargoService.getCargos().then((cargos: Page<Cargo>) => {
+      cargoService.getCargos(PageParams.nullObject()).then((cargos: Page<Cargo>) => {
         setCargoOptions(cargos.content.map(cargo => ({label: cargo.name, value: cargo.id} as SelectionOption)));
       });
     }

@@ -12,6 +12,7 @@ import DateUtils from "../../utils/DateUtils";
 import {useCargoService, useTripService, useVoucherService} from "../../service/useService";
 import {Page} from "../../model/Page";
 import {SpinnerContainer} from "../../utils/SpinnerContainer";
+import {PageParams} from "../../model/PageParams";
 
 
 export default function VoucherForm() {
@@ -40,7 +41,7 @@ export default function VoucherForm() {
 
   useEffect(() => {
     if (cargoService !== null) {
-      cargoService.getCargos().then((cargos: Page<Cargo>) => {
+      cargoService.getCargos(PageParams.nullObject()).then((cargos: Page<Cargo>) => {
         setCargoOptions(cargos.content.map(cargo => ({label: cargo.name, value: cargo.id} as SelectionOption)));
       });
     }

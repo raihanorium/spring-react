@@ -33,10 +33,14 @@ public class CargoController {
 
     @GetMapping
     public ResponseEntity<Response<Page<Cargo>>> getCargos(@RequestParam(defaultValue = "0") int page,
-                                                                @RequestParam(defaultValue = "10") int size) {
+                                                           @RequestParam(defaultValue = "10") int size,
+                                                           @RequestParam(defaultValue = "id") String sort,
+                                                           @RequestParam(defaultValue = "desc") String direction,
+                                                           @RequestParam(defaultValue = "") String search) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.fromString(direction), sort);
         return ResponseEntity.ok(Response.<Page<Cargo>>builder()
                 .success(true)
-                .data(cargoService.findAll(PageRequest.of(page, size, Sort.by("id").descending())))
+                .data(cargoService.findAll(search, pageRequest))
                 .code(HttpStatus.OK)
                 .build());
     }

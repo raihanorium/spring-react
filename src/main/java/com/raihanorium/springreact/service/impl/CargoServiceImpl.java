@@ -5,6 +5,7 @@ import com.raihanorium.springreact.repository.CargoRepository;
 import com.raihanorium.springreact.service.CargoService;
 import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -30,8 +31,12 @@ public class CargoServiceImpl implements CargoService {
     }
 
     @Override
-    public Page<Cargo> findAll(Pageable pageable) {
-        return cargoRepository.findAll(pageable);
+    public Page<Cargo> findAll(String name, Pageable pageable) {
+        if (StringUtils.isNotBlank(name)) {
+            return cargoRepository.findAllByNameLikeIgnoreCase("%" + name + "%", pageable);
+        } else {
+            return cargoRepository.findAll(pageable);
+        }
     }
 
     @Override

@@ -11,7 +11,7 @@ public interface CargoService {
 
     Optional<Cargo> findByName(String cargoName);
 
-    Page<Cargo> findAll(Pageable pageable);
+    Page<Cargo> findAll(String name, Pageable pageable);
 
     Cargo save(Cargo cargo);
 

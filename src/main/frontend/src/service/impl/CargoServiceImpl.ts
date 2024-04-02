@@ -2,13 +2,14 @@ import {Paths} from "../../utils/Paths";
 import {Page} from "../../model/Page";
 import {Cargo} from "../../model/Cargo";
 import {CargoService} from "../CargoService";
+import {PageParams} from "../../model/PageParams";
 
 export class CargoServiceImpl implements CargoService {
   constructor() {
   }
 
-  async getCargos(page?: number): Promise<Page<Cargo>> {
-    const url = page ? `${Paths.CARGOS}?page=${page}` : Paths.CARGOS;
+  async getCargos(params: PageParams): Promise<Page<Cargo>> {
+    const url = params.isNotBlank() ? `${Paths.CARGOS}?${params.toParamsString()}` : Paths.CARGOS;
     return await fetch(url).then(async response => {
       if (response.ok) {
         const json = await response.json();
