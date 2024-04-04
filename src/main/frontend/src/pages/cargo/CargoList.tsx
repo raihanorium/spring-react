@@ -63,7 +63,7 @@ export default function CargoList() {
               return (
                   <CTableRow key={cargo.id}>
                     <CTableDataCell>
-                      <Link to={'/cargo/' + cargo.id}>{cargo.name}</Link>
+                      <Link to={'/cargo/detail/' + cargo.id}>{cargo.name}</Link>
                     </CTableDataCell>
                     <CTableDataCell>{cargo.proprietor}</CTableDataCell>
                     <CTableDataCell>{cargo.contactNo}</CTableDataCell>

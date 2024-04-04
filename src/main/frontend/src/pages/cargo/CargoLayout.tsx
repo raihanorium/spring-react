@@ -8,7 +8,7 @@ import {cilLibraryAdd, cilX} from "@coreui/icons";
 export default function CargoLayout() {
   const location = useLocation();
   const [pageTitle, setPageTitle] = useState<string>();
-  const [action, setAction] = useState<ReactElement>();
+  const [action, setAction] = useState<ReactElement | null>();
 
   const addButton = (
       <Link to="/cargo/new" className="btn btn-outline-primary" color="success" type="button">
@@ -22,20 +22,20 @@ export default function CargoLayout() {
       </Link>);
 
   useEffect(() => {
-    switch (location.pathname) {
-      case '/cargo':
-        setPageTitle('Cargo');
-        setAction(addButton);
-        break;
-      case '/cargo/new':
-        setPageTitle('New Cargo');
-        setAction(cancelButton);
-        break;
-      default:
-        setPageTitle('Cargo');
-        setAction(addButton);
-        break;
+    if (location.pathname.startsWith('/cargo/new')) {
+      setPageTitle('New Cargo');
+      setAction(cancelButton);
+    } else if (location.pathname.startsWith('/cargo/detail')) {
+      setPageTitle('Cargo Detail');
+      setAction(null);
+    } else if (location.pathname.startsWith('/cargo')) {
+      setPageTitle('Cargo');
+      setAction(addButton);
+    } else {
+      setPageTitle('Cargo');
+      setAction(addButton);
     }
+
   }, [location]);
 
   return (

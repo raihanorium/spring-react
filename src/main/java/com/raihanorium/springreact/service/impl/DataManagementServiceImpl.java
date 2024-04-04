@@ -18,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -36,6 +38,8 @@ public class DataManagementServiceImpl implements DataManagementService {
 
     @Value("${application.upload.temporary.directory}")
     private String tempDirectory;
+
+    private static final Map<Long, Long> tripIdMap = new HashMap<>();
 
     @Transactional
     @Override
@@ -126,6 +130,7 @@ public class DataManagementServiceImpl implements DataManagementService {
         Sheet sheet = workbook.getSheet("Trip");
         for (Row row : sheet) {
             if (isNotBlank(row) && isNotHeaderRow(row)) {
+                Long tripNumber = (long) row.getCell(0).getNumericCellValue();
                 companyService.findByName(row.getCell(2).getStringCellValue().trim()).ifPresent(company ->
                         cargoService.findByName(row.getCell(3).getStringCellValue().trim()).ifPresent(cargo -> {
                             Trip trip = Trip.builder()
@@ -137,7 +142,8 @@ public class DataManagementServiceImpl implements DataManagementService {
                                     .to(row.getCell(7).getStringCellValue().trim())
                                     .rent(row.getCell(8).getNumericCellValue())
                                     .build();
-                            tripService.save(trip);
+                            Trip saved = tripService.save(trip);
+                            tripIdMap.put(tripNumber, saved.getId());
                         }));
             }
         }
@@ -154,7 +160,7 @@ public class DataManagementServiceImpl implements DataManagementService {
                     if (StringUtils.isNoneBlank(tripValue)) {
                         Long tripId = StringUtils.trimToNull(tripValue.split(" ")[0]) != null ?
                                 Long.parseLong(tripValue.split(" ")[0]) : null;
-                        trip = tripId != null ? tripService.findById(tripId).orElse(null) : null;
+                        trip = tripId != null ? tripService.findById(tripIdMap.get(tripId)).orElse(null) : null;
                     }
                     Voucher voucher = Voucher.builder()
                             .cargo(cargo)

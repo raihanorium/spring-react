@@ -4,7 +4,7 @@ import {CSpinner} from '@coreui/react'
 import routes from '../routes'
 import {Home} from "../pages/Home";
 import {CompanyForm, CompanyLayout, CompanyList} from "../pages/company";
-import {CargoForm, CargoLayout, CargoList} from "../pages/cargo";
+import {CargoDetail, CargoForm, CargoLayout, CargoList} from "../pages/cargo";
 import {TripForm, TripLayout, TripList} from "../pages/trip";
 import {VoucherForm, VoucherLayout, VoucherList} from "../pages/voucher";
 import DataManagementPage from "../pages/data-management/DataManagementPage";
@@ -37,6 +37,7 @@ const AppContent = () => {
             <Route index element={<CargoList/>}/>
             <Route path="new" element={<CargoForm/>}/>
             <Route path="edit/:cargoId" element={<CargoForm/>}/>
+            <Route path="detail/:cargoId" element={<CargoDetail/>}/>
           </Route>
           <Route path="/trip" element={<TripLayout/>}>
             <Route index element={<TripList/>}/>
