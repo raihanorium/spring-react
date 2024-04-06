@@ -8,8 +8,14 @@ import {useVoucherService} from "../../service/useService";
 import {Page} from "../../model/Page";
 import {Pagination} from "../../utils/Pagination";
 import {SpinnerContainer} from "../../utils/SpinnerContainer";
+import {Cargo} from "../../model/Cargo";
+import {FormattedCurrency} from "../../components/FormattedCurrency";
 
-export default function VoucherList() {
+type Props = {
+  cargo?: Cargo | null
+};
+
+export default function VoucherList(props: Props) {
   const voucherService = useVoucherService();
 
   const [vouchersPage, setVouchersPage] = useState<Page<Voucher>>();
@@ -19,7 +25,10 @@ export default function VoucherList() {
   useEffect(() => {
     if (voucherService !== null) {
       setLoading(true);
-      voucherService.getVouchers(currentPageNumber).then((vouchers) => {
+      const vouchersPage = props.cargo ?
+          voucherService.getVouchersByCargo(Number(props.cargo.id), currentPageNumber) :
+          voucherService.getVouchers(currentPageNumber);
+      vouchersPage.then((vouchers) => {
         setVouchersPage(vouchers);
       }).finally(() => setLoading(false));
     }
@@ -49,8 +58,8 @@ export default function VoucherList() {
                     </CTableDataCell>
                     <CTableDataCell>{voucher.voucherNo}</CTableDataCell>
                     <CTableDataCell>{DateUtils.toString(voucher.date)}</CTableDataCell>
-                    <CTableDataCell>{voucher.dr?.toString()}</CTableDataCell>
-                    <CTableDataCell>{voucher.cr?.toString()}</CTableDataCell>
+                    <CTableDataCell><FormattedCurrency number={Number(voucher.dr)}/></CTableDataCell>
+                    <CTableDataCell><FormattedCurrency number={Number(voucher.cr)}/></CTableDataCell>
                     <CTableDataCell>{voucher.particular}</CTableDataCell>
                     <CTableDataCell>
                       <Link to={'/voucher/edit/' + voucher.id}>Edit</Link>

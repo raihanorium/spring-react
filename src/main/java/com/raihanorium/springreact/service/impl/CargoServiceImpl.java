@@ -1,5 +1,6 @@
 package com.raihanorium.springreact.service.impl;
 
+import com.raihanorium.springreact.dto.CargoDetailsDto;
 import com.raihanorium.springreact.model.Cargo;
 import com.raihanorium.springreact.repository.CargoRepository;
 import com.raihanorium.springreact.service.CargoService;
@@ -47,5 +48,10 @@ public class CargoServiceImpl implements CargoService {
     @Override
     public void deleteAll() {
         cargoRepository.deleteAll();
+    }
+
+    @Override
+    public CargoDetailsDto getCargoDetails(Long cargoId) {
+        return cargoRepository.getCargoDetails(cargoId);
     }
 }

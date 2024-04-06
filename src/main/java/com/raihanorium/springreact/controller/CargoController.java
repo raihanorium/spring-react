@@ -1,5 +1,6 @@
 package com.raihanorium.springreact.controller;
 
+import com.raihanorium.springreact.dto.CargoDetailsDto;
 import com.raihanorium.springreact.exception.CargoNotFoundException;
 import com.raihanorium.springreact.model.Cargo;
 import com.raihanorium.springreact.response.Response;
@@ -41,6 +42,15 @@ public class CargoController {
         return ResponseEntity.ok(Response.<Page<Cargo>>builder()
                 .success(true)
                 .data(cargoService.findAll(search, pageRequest))
+                .code(HttpStatus.OK)
+                .build());
+    }
+
+    @GetMapping("/{id}/details")
+    public ResponseEntity<Response<CargoDetailsDto>> getCargoDetails(@PathVariable Long id) {
+        return ResponseEntity.ok(Response.<CargoDetailsDto>builder()
+                .success(true)
+                .data(cargoService.getCargoDetails(id))
                 .code(HttpStatus.OK)
                 .build());
     }

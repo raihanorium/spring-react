@@ -8,8 +8,14 @@ import {useTripService} from "../../service/useService";
 import {Page} from "../../model/Page";
 import {Pagination} from "../../utils/Pagination";
 import {SpinnerContainer} from "../../utils/SpinnerContainer";
+import {Cargo} from "../../model/Cargo";
+import {FormattedCurrency} from "../../components/FormattedCurrency";
 
-export default function TripList() {
+type Props = {
+  cargo?: Cargo | null
+};
+
+export default function TripList(props: Props) {
   const tripService = useTripService();
 
   const [tripsPage, setTripsPage] = useState<Page<Trip>>();
@@ -19,7 +25,10 @@ export default function TripList() {
   useEffect(() => {
     if (tripService !== null) {
       setLoading(true);
-      tripService.getTrips(currentPageNumber).then((trips: Page<Trip>) => {
+      const tripsPage = props.cargo ?
+          tripService.getTripsByCargo(Number(props.cargo.id), currentPageNumber) :
+          tripService.getTrips(currentPageNumber);
+      tripsPage.then((trips: Page<Trip>) => {
         setTripsPage(trips);
       }).finally(() => setLoading(false));
     }
@@ -32,6 +41,7 @@ export default function TripList() {
     {key: 'endDate', label: 'End Date', _props: {scope: 'col'}},
     {key: 'from', label: 'From', _props: {scope: 'col'}},
     {key: 'to', label: 'To', _props: {scope: 'col'}},
+    {key: 'rent', label: 'Rent', _props: {scope: 'col'}},
     {key: 'action', label: '', _props: {scope: 'col'}},
   ];
 
@@ -50,6 +60,7 @@ export default function TripList() {
                     <CTableDataCell>{DateUtils.toString(trip.endDate)}</CTableDataCell>
                     <CTableDataCell>{trip.from}</CTableDataCell>
                     <CTableDataCell>{trip.to}</CTableDataCell>
+                    <CTableDataCell><FormattedCurrency number={trip.rent}/></CTableDataCell>
                     <CTableDataCell>
                       <Link to={'/trip/edit/' + trip.id}>Edit</Link>
                     </CTableDataCell>
@@ -58,7 +69,7 @@ export default function TripList() {
           </CTableBody>
           <CTableFoot>
             <CTableRow>
-              <CTableDataCell colSpan={7}>
+              <CTableDataCell colSpan={8}>
                 <Pagination page={tripsPage} setCurrentPageNumber={setCurrentPageNumber}/>
               </CTableDataCell>
             </CTableRow>

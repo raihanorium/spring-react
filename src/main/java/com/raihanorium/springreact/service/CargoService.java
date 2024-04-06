@@ -1,5 +1,6 @@
 package com.raihanorium.springreact.service;
 
+import com.raihanorium.springreact.dto.CargoDetailsDto;
 import com.raihanorium.springreact.model.Cargo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,4 +17,6 @@ public interface CargoService {
     Cargo save(Cargo cargo);
 
     void deleteAll();
+
+    CargoDetailsDto getCargoDetails(Long cargoId);
 }

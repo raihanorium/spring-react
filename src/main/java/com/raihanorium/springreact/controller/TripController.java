@@ -52,6 +52,17 @@ public class TripController {
                 .build());
     }
 
+    @GetMapping("/cargo/{cargoId}")
+    public ResponseEntity<Response<Page<Trip>>> getTripsByCargo(@PathVariable Long cargoId,
+                                                                @RequestParam(defaultValue = "0") int page,
+                                                                @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(Response.<Page<Trip>>builder()
+                .success(true)
+                .data(tripService.findAllByCargoId(cargoId, PageRequest.of(page, size, Sort.by("id").descending())))
+                .code(HttpStatus.OK)
+                .build());
+    }
+
     @PostMapping
     public ResponseEntity<Response<Trip>> saveTrip(@RequestBody TripDto tripDto) {
         Company company = companyService.findById(tripDto.getCompanyId()).orElseThrow(CompanyNotFoundException::new);

@@ -9,6 +9,15 @@ export class VoucherServiceImpl implements VoucherService {
 
   async getVouchers(page?: number): Promise<Page<Voucher>> {
     const url = page ? `${Paths.VOUCHERS}?page=${page}` : Paths.VOUCHERS;
+    return await this.getVouchersPage(url);
+  }
+
+  async getVouchersByCargo(cargoId: number, page?: number): Promise<Page<Voucher>> {
+    const url = page ? `${Paths.VOUCHERS}/cargo/${cargoId}?page=${page}` : `${Paths.VOUCHERS}/cargo/${cargoId}`;
+    return await this.getVouchersPage(url);
+  }
+
+  private async getVouchersPage(url: string) {
     return await fetch(url).then(async response => {
       if (response.ok) {
         const json = await response.json();

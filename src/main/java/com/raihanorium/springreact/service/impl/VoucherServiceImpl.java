@@ -30,6 +30,11 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
+    public Page<Voucher> findAllByCargoId(Long cargoId, Pageable pageable) {
+        return voucherRepository.findAllByCargoId(cargoId, pageable);
+    }
+
+    @Override
     public Voucher save(Voucher voucher) {
         return voucherRepository.save(voucher);
     }

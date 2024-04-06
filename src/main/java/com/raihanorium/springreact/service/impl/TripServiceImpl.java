@@ -30,6 +30,11 @@ public class TripServiceImpl implements TripService {
     }
 
     @Override
+    public Page<Trip> findAllByCargoId(Long cargoId, Pageable pageable) {
+        return tripRepository.findAllByCargoId(cargoId, pageable);
+    }
+
+    @Override
     public Trip save(Trip trip) {
         return tripRepository.save(trip);
     }

@@ -52,6 +52,17 @@ public class VoucherController {
                 .build());
     }
 
+    @GetMapping("/cargo/{cargoId}")
+    public ResponseEntity<Response<Page<Voucher>>> getVouchersByCargo(@PathVariable Long cargoId,
+                                                                      @RequestParam(defaultValue = "0") int page,
+                                                                      @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(Response.<Page<Voucher>>builder()
+                .success(true)
+                .data(voucherService.findAllByCargoId(cargoId, PageRequest.of(page, size, Sort.by("id").descending())))
+                .code(HttpStatus.OK)
+                .build());
+    }
+
     @PostMapping
     public ResponseEntity<Response<Voucher>> saveVoucher(@RequestBody VoucherDto voucherDto) {
         Cargo cargo = cargoService.findById(voucherDto.getCargoId()).orElseThrow(CargoNotFoundException::new);

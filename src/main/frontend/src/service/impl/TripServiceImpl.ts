@@ -9,6 +9,15 @@ export class TripServiceImpl implements TripService {
 
   async getTrips(page?: number): Promise<Page<Trip>> {
     const url = page ? `${Paths.TRIPS}?page=${page}` : Paths.TRIPS;
+    return await this.getTripsPage(url);
+  }
+
+  async getTripsByCargo(cargoId: number, page?: number): Promise<Page<Trip>> {
+    const url = page ? `${Paths.TRIPS}/cargo/${cargoId}?page=${page}` : `${Paths.TRIPS}/cargo/${cargoId}`;
+    return await this.getTripsPage(url);
+  }
+
+  private async getTripsPage(url: string) {
     return await fetch(url).then(async response => {
       if (response.ok) {
         const json = await response.json();

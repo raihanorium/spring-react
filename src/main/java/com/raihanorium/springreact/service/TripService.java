@@ -11,6 +11,8 @@ public interface TripService {
 
     Page<Trip> findAll(Pageable pageable);
 
+    Page<Trip> findAllByCargoId(Long cargoId, Pageable pageable);
+
     Trip save(Trip trip);
 
     void deleteAll();
