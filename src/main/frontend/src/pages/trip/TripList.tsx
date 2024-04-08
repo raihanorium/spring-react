@@ -47,7 +47,7 @@ export default function TripList(props: Props) {
 
   return (
       <SpinnerContainer loading={loading}>
-        <CTable striped hover columns={columns}>
+        <CTable responsive striped hover columns={columns}>
           <CTableBody>
             {tripsPage?.content && tripsPage?.content.map(trip => {
               return (

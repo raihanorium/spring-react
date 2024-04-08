@@ -57,7 +57,7 @@ export default function CargoList() {
             </div>
           </div>
         </CForm>
-        <CTable striped hover columns={columns}>
+        <CTable responsive striped hover columns={columns}>
           <CTableBody>
             {cargosPage?.content && cargosPage?.content.map(cargo => {
               return (

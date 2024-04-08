@@ -34,7 +34,7 @@ export default function CompanyList() {
 
   return (
       <SpinnerContainer loading={loading}>
-        <CTable striped hover columns={columns}>
+        <CTable responsive striped hover columns={columns}>
           <CTableBody>
             {companiesPage?.content && companiesPage?.content.map(company => {
               return (

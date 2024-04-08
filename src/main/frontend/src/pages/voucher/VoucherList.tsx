@@ -47,7 +47,7 @@ export default function VoucherList(props: Props) {
 
   return (
       <SpinnerContainer loading={loading}>
-        <CTable striped hover columns={columns}>
+        <CTable responsive striped hover columns={columns}>
           <CTableBody>
             {vouchersPage?.content && vouchersPage.content.map(voucher => {
               return (
