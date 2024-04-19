@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {useEffect, useRef, useState} from 'react';
-import {CForm, CTable, CTableBody, CTableDataCell, CTableFoot, CTableRow} from "@coreui/react";
+import {CForm, CTable, CTableBody, CTableDataCell, CTableRow} from "@coreui/react";
 import {Link} from "react-router-dom";
 import {Cargo} from "../../model/Cargo";
 import {useCargoService} from "../../service/useService";
@@ -48,10 +48,10 @@ export default function CargoList() {
           }
         }}>
           <div className="row">
-            <div className="btn-group me-2" role="group" aria-label="Search button group">
+            <div className="input-group me-2" role="group" aria-label="Search button group">
               <input ref={searchInputRef} type="text" className="form-control" placeholder="Search..."
                      defaultValue={term}/>
-              <button className="btn btn-outline-secondary" type="submit">
+              <button className="btn btn-outline-secondary input-group-text" type="submit">
                 <CIcon icon={cilSearch} title="Search"/>
               </button>
             </div>
@@ -75,14 +75,8 @@ export default function CargoList() {
                   </CTableRow>)
             })}
           </CTableBody>
-          <CTableFoot>
-            <CTableRow>
-              <CTableDataCell colSpan={7}>
-                <Pagination page={cargosPage} setCurrentPageNumber={setCurrentPageNumber}/>
-              </CTableDataCell>
-            </CTableRow>
-          </CTableFoot>
         </CTable>
+        <Pagination page={cargosPage} setCurrentPageNumber={setCurrentPageNumber}/>
       </SpinnerContainer>
   );
 }

@@ -26,17 +26,17 @@ public class CargoQueryRepositoryImpl extends QuerydslRepositorySupport implemen
                 .fetchOne();
 
         Double totalRent = from(trip)
-                .select(trip.rent.sum())
+                .select(trip.rent.sum().coalesce(0d))
                 .where(trip.cargo.id.eq(cargoId))
                 .fetchOne();
 
         Double totalReturn = from(voucher)
-                .select(voucher.dr.sum())
+                .select(voucher.dr.sum().coalesce(0d))
                 .where(voucher.cargo.id.eq(cargoId))
                 .fetchOne();
 
         Double totalPaid = from(voucher)
-                .select(voucher.cr.sum())
+                .select(voucher.cr.sum().coalesce(0d))
                 .where(voucher.cargo.id.eq(cargoId))
                 .fetchOne();
 

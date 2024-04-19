@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {useEffect, useState} from 'react';
-import {CTable, CTableBody, CTableDataCell, CTableFoot, CTableRow} from "@coreui/react";
+import {CTable, CTableBody, CTableDataCell, CTableRow} from "@coreui/react";
 import {Company} from "../../model/Company";
 import {Link} from "react-router-dom";
 import {useCompanyService} from "../../service/useService";
@@ -51,14 +51,8 @@ export default function CompanyList() {
                   </CTableRow>)
             })}
           </CTableBody>
-          <CTableFoot>
-            <CTableRow>
-              <CTableDataCell colSpan={5}>
-                <Pagination page={companiesPage} setCurrentPageNumber={setCurrentPageNumber}/>
-              </CTableDataCell>
-            </CTableRow>
-          </CTableFoot>
         </CTable>
+        <Pagination page={companiesPage} setCurrentPageNumber={setCurrentPageNumber}/>
       </SpinnerContainer>
   );
 }

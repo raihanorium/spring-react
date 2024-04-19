@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {useEffect, useState} from 'react';
-import {CTable, CTableBody, CTableDataCell, CTableFoot, CTableRow} from "@coreui/react";
+import {CTable, CTableBody, CTableDataCell, CTableRow} from "@coreui/react";
 import {Link} from "react-router-dom";
 import {Trip} from "../../model/Trip";
 import DateUtils from "../../utils/DateUtils";
@@ -60,21 +60,15 @@ export default function TripList(props: Props) {
                     <CTableDataCell>{DateUtils.toString(trip.endDate)}</CTableDataCell>
                     <CTableDataCell>{trip.from}</CTableDataCell>
                     <CTableDataCell>{trip.to}</CTableDataCell>
-                    <CTableDataCell><FormattedCurrency number={trip.rent}/></CTableDataCell>
+                    <CTableDataCell style={{textAlign: "right"}}><FormattedCurrency number={trip.rent}/></CTableDataCell>
                     <CTableDataCell>
                       <Link to={'/trip/edit/' + trip.id}>Edit</Link>
                     </CTableDataCell>
                   </CTableRow>)
             })}
           </CTableBody>
-          <CTableFoot>
-            <CTableRow>
-              <CTableDataCell colSpan={8}>
-                <Pagination page={tripsPage} setCurrentPageNumber={setCurrentPageNumber}/>
-              </CTableDataCell>
-            </CTableRow>
-          </CTableFoot>
         </CTable>
+        <Pagination page={tripsPage} setCurrentPageNumber={setCurrentPageNumber}/>
       </SpinnerContainer>
   );
 }

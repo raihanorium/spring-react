@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {useEffect, useState} from 'react';
-import {CTable, CTableBody, CTableDataCell, CTableFoot, CTableRow} from "@coreui/react";
+import {CCol, CRow} from "@coreui/react";
 import {Link} from "react-router-dom";
 import {Voucher} from "../../model/Voucher";
 import DateUtils from "../../utils/DateUtils";
@@ -45,36 +45,54 @@ export default function VoucherList(props: Props) {
     {key: 'action', label: '', _props: {scope: 'col'}},
   ];
 
+  const boxStyle = {
+    backgroundColor: 'rgb(0, 191, 255)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    fontSize: '30px',
+    cursor: 'pointer',
+  };
+
   return (
       <SpinnerContainer loading={loading}>
-        <CTable responsive striped hover columns={columns}>
-          <CTableBody>
-            {vouchersPage?.content && vouchersPage.content.map(voucher => {
-              return (
-                  <CTableRow key={voucher.id}>
-                    <CTableDataCell>{voucher.cargoId}</CTableDataCell>
-                    <CTableDataCell>
-                      <Link to={'/voucher/' + voucher.id}>{voucher.tripId}</Link>
-                    </CTableDataCell>
-                    <CTableDataCell>{voucher.voucherNo}</CTableDataCell>
-                    <CTableDataCell>{DateUtils.toString(voucher.date)}</CTableDataCell>
-                    <CTableDataCell><FormattedCurrency number={Number(voucher.dr)}/></CTableDataCell>
-                    <CTableDataCell><FormattedCurrency number={Number(voucher.cr)}/></CTableDataCell>
-                    <CTableDataCell>{voucher.particular}</CTableDataCell>
-                    <CTableDataCell>
-                      <Link to={'/voucher/edit/' + voucher.id}>Edit</Link>
-                    </CTableDataCell>
-                  </CTableRow>)
-            })}
-          </CTableBody>
-          <CTableFoot>
-            <CTableRow>
-              <CTableDataCell colSpan={8}>
-                <Pagination page={vouchersPage} setCurrentPageNumber={setCurrentPageNumber}/>
-              </CTableDataCell>
-            </CTableRow>
-          </CTableFoot>
-        </CTable>
+
+        {vouchersPage?.content && vouchersPage.content.map(voucher => {
+          return (
+              <CRow key={voucher.id} className="list-item">
+                <CCol>
+                  <h5 className="mb-1">{voucher.cargoId}</h5>
+                  <p className="mb-1">{voucher.tripId}</p>
+                  {voucher.voucherNo && <small className="mb-1 text-secondary">Voucher No.:{voucher.voucherNo}</small>}
+                </CCol>
+                <CCol sm={2}>
+                  {voucher.dr != null && voucher.dr > 0 &&
+                      <small>
+                        <span className="text-warning">Dr:</span>
+                        <span className="float-end"><FormattedCurrency number={voucher.dr}/></span>
+                      </small>
+                  }
+                  {voucher.cr != null && voucher.cr > 0 &&
+                      <small>
+                        Cr:
+                        <span className="float-end"><FormattedCurrency number={voucher.cr}/></span>
+                      </small>
+                  }
+                  <br/>
+                  <small className="text-secondary">{voucher.particular}</small>
+                </CCol>
+                <CCol>
+                  <small className="text-secondary float-end">{DateUtils.toString(voucher.date)}</small>
+                  <br/>
+                  <small className="text-secondary float-end">
+                    <Link to={'/voucher/edit/' + voucher.id}>Edit</Link>
+                  </small>
+                </CCol>
+              </CRow>
+          )
+        })}
+
+        <Pagination page={vouchersPage} setCurrentPageNumber={setCurrentPageNumber}/>
       </SpinnerContainer>
   );
 }

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {Page} from "../model/Page";
-import {CPagination, CPaginationItem} from "@coreui/react";
+import {CCol, CPagination, CPaginationItem, CRow} from "@coreui/react";
 
 type Props = {
   page: Page<any> | undefined;
@@ -8,14 +8,11 @@ type Props = {
 };
 
 export function Pagination(props: Props) {
-  const { page, setCurrentPageNumber } = props;
-  const numberOfPages = page?.totalElements ? Math.ceil(page.totalElements / page.size) : 0;
+  const {page, setCurrentPageNumber} = props;
+  const pageSize = page?.size || 0;
+  const totalElements = page?.totalElements || 0;
+  const numberOfPages = totalElements ? Math.ceil(totalElements / pageSize) : 0;
   const currentPage = page?.number || 0;
-
-  // If there is only one page, return null to hide the pagination
-  if (numberOfPages <= 1) {
-    return null;
-  }
 
   const renderPaginationItems = () => {
     const paginationItems = [];
@@ -36,7 +33,7 @@ export function Pagination(props: Props) {
           <CPaginationItem
               key="jump-to-beginning"
               onClick={() => setCurrentPageNumber(0)}
-              style={{ cursor: 'pointer' }}
+              style={{cursor: 'pointer'}}
           >
             <span aria-hidden="true">&laquo;&laquo;</span>
           </CPaginationItem>
@@ -49,7 +46,7 @@ export function Pagination(props: Props) {
           <CPaginationItem
               key="prev"
               onClick={() => setCurrentPageNumber(currentPage - 1)}
-              style={{ cursor: 'pointer' }}
+              style={{cursor: 'pointer'}}
           >
             <span aria-hidden="true">&laquo;</span>
           </CPaginationItem>
@@ -63,7 +60,7 @@ export function Pagination(props: Props) {
               key={i}
               onClick={() => setCurrentPageNumber(i)}
               active={currentPage === i}
-              style={{ cursor: 'pointer' }}
+              style={{cursor: 'pointer'}}
           >
             {i + 1}
           </CPaginationItem>
@@ -76,7 +73,7 @@ export function Pagination(props: Props) {
           <CPaginationItem
               key="next"
               onClick={() => setCurrentPageNumber(currentPage + 1)}
-              style={{ cursor: 'pointer' }}
+              style={{cursor: 'pointer'}}
           >
             <span aria-hidden="true">&raquo;</span>
           </CPaginationItem>
@@ -89,7 +86,7 @@ export function Pagination(props: Props) {
           <CPaginationItem
               key="jump-to-end"
               onClick={() => setCurrentPageNumber(numberOfPages - 1)}
-              style={{ cursor: 'pointer' }}
+              style={{cursor: 'pointer'}}
           >
             <span aria-hidden="true">&raquo;&raquo;</span>
           </CPaginationItem>
@@ -100,8 +97,18 @@ export function Pagination(props: Props) {
   };
 
   return (
-      <CPagination align="center" aria-label="Page navigation example">
-        {renderPaginationItems()}
-      </CPagination>
+      <CRow className="mt-2">
+        <CCol>
+          <CPagination align="center" aria-label="Page navigation example" className="mb-0">
+            {numberOfPages > 1 && renderPaginationItems()}
+          </CPagination>
+
+          {totalElements === 0 ? <small aria-hidden="true" className="text-secondary">Nothing here</small> :
+              <small aria-hidden="true" className="text-secondary">
+                <em>Showing {currentPage * pageSize + 1} to {Math.min((currentPage + 1) * pageSize, totalElements)} of total {totalElements}</em>
+              </small>}
+        </CCol>
+      </CRow>
   );
+
 }

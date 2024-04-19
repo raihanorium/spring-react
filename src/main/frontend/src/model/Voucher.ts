@@ -7,8 +7,8 @@ export class Voucher {
         formData.get("tripId") as string | null,
         formData.get("voucherNo") as string | null,
         new Date(Date.parse(formData.get("date") as string)),
-        formData.get("dr") as Number | null,
-        formData.get("cr") as Number | null,
+        formData.get("dr") as number | null,
+        formData.get("cr") as number | null,
         formData.get("particular") as string | null,
     );
   }
@@ -32,8 +32,8 @@ export class Voucher {
       public tripId: string | null,
       public voucherNo: string | null,
       public date: Date | null,
-      public dr: Number | null,
-      public cr: Number | null,
+      public dr: number | null,
+      public cr: number | null,
       public particular: string | null,
   ) {
   }

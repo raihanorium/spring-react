@@ -1,0 +1,11 @@
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  margin: 0 0;
+  border-bottom: 1px solid #eee;
+}
+
+.list-item:hover {
+  background-color: #f3f3f3f3;
+}
