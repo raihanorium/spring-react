@@ -21,7 +21,7 @@ export class TripServiceImpl implements TripService {
     return await fetch(url).then(async response => {
       if (response.ok) {
         const json = await response.json();
-        const trips = json.data.content.map((trip: any) => new Trip(trip.id, trip.company.name, trip.cargo.name, trip.startDate ? new Date(trip.startDate) : null, trip.endDate ? new Date(trip.endDate) : null, trip.from, trip.to, trip.rent));
+        const trips = json.data.content.map((trip: any) => new Trip(trip.id, trip.company.id, trip.company.name, trip.cargo.id, trip.cargo.name, trip.startDate ? new Date(trip.startDate) : null, trip.endDate ? new Date(trip.endDate) : null, trip.from, trip.to, trip.rent));
         return new Page<Trip>(trips, json.data.number, json.data.size, json.data.totalElements);
       } else {
         throw new Error("Failed to fetch trips");
@@ -33,7 +33,7 @@ export class TripServiceImpl implements TripService {
     return await fetch(`${Paths.TRIPS}/${id}`).then(async response => {
       if (response.ok) {
         const json = await response.json();
-        return new Trip(json.data.id, json.data.company?.id, json.data.cargo?.id, new Date(json.data.startDate), new Date(json.data.endDate), json.data.from, json.data.to, json.data.rent);
+        return new Trip(json.data.id, json.data.company?.id, json.data.company?.name, json.data.cargo?.id, json.data.cargo?.name, new Date(json.data.startDate), new Date(json.data.endDate), json.data.from, json.data.to, json.data.rent);
       } else {
         throw new Error("Failed to fetch trip");
       }
@@ -50,7 +50,7 @@ export class TripServiceImpl implements TripService {
     }).then(async response => {
       if (response.ok) {
         const json = await response.json();
-        return new Trip(json.data.id, json.data.company.name, json.data.cargo.name, json.data.startDate, json.data.endDate, json.data.from, json.data.to, json.data.rent);
+        return new Trip(json.data.id, json.data.company.id, null, json.data.cargo.id, null, json.data.startDate, json.data.endDate, json.data.from, json.data.to, json.data.rent);
       } else {
         throw new Error("Failed to save trip");
       }

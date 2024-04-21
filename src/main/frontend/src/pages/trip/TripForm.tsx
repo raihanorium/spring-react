@@ -12,6 +12,7 @@ import {useCargoService, useCompanyService, useTripService} from "../../service/
 import {Page} from "../../model/Page";
 import {SpinnerContainer} from "../../utils/SpinnerContainer";
 import {PageParams} from "../../model/PageParams";
+import {SelectionOption} from "../../model/SelectionOption";
 
 
 export default function TripForm() {
@@ -76,16 +77,13 @@ export default function TripForm() {
   useEffect(() => {
     if (companyService !== null) {
       companyService.getCompanies().then((companies: Page<Company>) => {
-        setCompanyOptions(companies.content.map(company => ({
-          label: company.name,
-          value: company.id
-        } as SelectionOption)));
+        setCompanyOptions(companies.content.map(company => (SelectionOption.from(company.name, company.id))));
       });
     }
 
     if (cargoService !== null) {
       cargoService.getCargos(PageParams.nullObject()).then((cargos: Page<Cargo>) => {
-        setCargoOptions(cargos.content.map(cargo => ({label: cargo.name, value: cargo.id} as SelectionOption)));
+        setCargoOptions(cargos.content.map(cargo => (SelectionOption.from(cargo.name, cargo.id))));
       });
     }
   }, [companyService, cargoService]);
@@ -96,8 +94,8 @@ export default function TripForm() {
       tripService.getTrip(Number(tripId)).then(t => {
         if (t) {
           setTrip(t);
-          setSelectedCompanyOption(companyOptions.filter(option => option.value === t.companyId)[0]);
-          setSelectedCargoOption(cargoOptions.filter(option => option.value === t.cargoId)[0]);
+          setSelectedCompanyOption(SelectionOption.from(t.companyTitle, t.companyId));
+          setSelectedCargoOption(SelectionOption.from(t.cargoTitle, t.cargoId));
           setStartDate(t.startDate);
           setEndDate(t.endDate);
         }

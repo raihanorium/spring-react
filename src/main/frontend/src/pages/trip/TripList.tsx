@@ -52,15 +52,15 @@ export default function TripList(props: Props) {
             {tripsPage?.content && tripsPage?.content.map(trip => {
               return (
                   <CTableRow key={trip.id}>
-                    <CTableDataCell>
-                      <Link to={'/trip/' + trip.id}>{trip.companyId}</Link>
-                    </CTableDataCell>
-                    <CTableDataCell>{trip.cargoId}</CTableDataCell>
+                    <CTableDataCell><Link to={'/company/' + trip.companyId}>{trip.companyTitle}</Link></CTableDataCell>
+                    <CTableDataCell><Link to={'/cargo/detail/' + trip.cargoId}>{trip.cargoTitle}</Link></CTableDataCell>
                     <CTableDataCell>{DateUtils.toString(trip.startDate)}</CTableDataCell>
                     <CTableDataCell>{DateUtils.toString(trip.endDate)}</CTableDataCell>
                     <CTableDataCell>{trip.from}</CTableDataCell>
                     <CTableDataCell>{trip.to}</CTableDataCell>
-                    <CTableDataCell style={{textAlign: "right"}}><FormattedCurrency number={trip.rent}/></CTableDataCell>
+                    <CTableDataCell style={{textAlign: "right"}}>
+                      <FormattedCurrency number={trip.rent}/>
+                    </CTableDataCell>
                     <CTableDataCell>
                       <Link to={'/trip/edit/' + trip.id}>Edit</Link>
                     </CTableDataCell>

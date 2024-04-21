@@ -8,11 +8,11 @@ import {DateInput} from "../../components/DateInput";
 import {Trip} from "../../model/Trip";
 import Select from "react-select";
 import {Cargo} from "../../model/Cargo";
-import DateUtils from "../../utils/DateUtils";
 import {useCargoService, useTripService, useVoucherService} from "../../service/useService";
 import {Page} from "../../model/Page";
 import {SpinnerContainer} from "../../utils/SpinnerContainer";
 import {PageParams} from "../../model/PageParams";
+import {SelectionOption} from "../../model/SelectionOption";
 
 
 export default function VoucherForm() {
@@ -42,16 +42,13 @@ export default function VoucherForm() {
   useEffect(() => {
     if (cargoService !== null) {
       cargoService.getCargos(PageParams.nullObject()).then((cargos: Page<Cargo>) => {
-        setCargoOptions(cargos.content.map(cargo => ({label: cargo.name, value: cargo.id} as SelectionOption)));
+        setCargoOptions(cargos.content.map(cargo => SelectionOption.from(cargo.name, cargo.id)));
       });
     }
 
     if (tripService !== null) {
       tripService.getTrips().then((trips: Page<Trip>) => {
-        setTripOptions(trips.content.map(trip => ({
-          label: trip.from + "-" + trip.to + "-" + DateUtils.toString(trip.startDate),
-          value: trip.id
-        } as SelectionOption)));
+        setTripOptions(trips.content.map(trip => SelectionOption.from(trip.getLabel(), trip.id)));
       });
     }
   }, [cargoService, tripService]);
@@ -62,8 +59,8 @@ export default function VoucherForm() {
       voucherService.getVoucher(Number(voucherId)).then(v => {
         if (v) {
           setVoucher(v);
-          setSelectedTripOption(tripOptions.filter(option => option.value === v.tripId)[0]);
-          setSelectedCargoOption(cargoOptions.filter(option => option.value === v.cargoId)[0]);
+          v.tripId && setSelectedTripOption(SelectionOption.from(v.tripTitle, v.tripId));
+          v.cargoId && setSelectedCargoOption(SelectionOption.from(v.cargoTitle, v.cargoId));
           setDate(v.date);
         }
       }).finally(() => setLoading(false));
@@ -121,7 +118,7 @@ export default function VoucherForm() {
                       onChange={handleCargoChange}
                       value={selectedCargoOption}
                       styles={{
-                        control: (baseStyles, state) => ({
+                        control: (baseStyles) => ({
                           ...baseStyles,
                           borderColor: validated ? (cargoValid ? '#2eb85c' : 'red') : 'gray',
                         }),
@@ -138,13 +135,13 @@ export default function VoucherForm() {
                       onChange={handleTripChange}
                       value={selectedTripOption}
                       styles={{
-                        control: (baseStyles, state) => ({
+                        control: (baseStyles) => ({
                           ...baseStyles,
                           borderColor: validated ? (tripValid ? '#2eb85c' : 'red') : 'gray',
                         }),
                       }}/>
               <CFormFeedback invalid style={{display: tripValid ? 'none' : 'block'}}>
-                Trip is not valid
+                Please select a trip
               </CFormFeedback>
             </CCol>
           </CRow>

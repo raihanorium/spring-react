@@ -2,7 +2,7 @@ export class Cargo {
 
   public static from(formData: FormData): Cargo {
     return new Cargo(
-        formData.get("id") as string | null,
+        formData.get("id") as number | null,
         formData.get("name") as string | null,
         formData.get("proprietor") as string | null,
         formData.get("contactNo") as string | null,
@@ -22,7 +22,7 @@ export class Cargo {
   }
 
   public constructor(
-      public id: string | null,
+      public id: number | null,
       public name: string | null,
       public proprietor: string | null,
       public contactNo: string | null,

@@ -61,9 +61,13 @@ export default function VoucherList(props: Props) {
           return (
               <CRow key={voucher.id} className="list-item">
                 <CCol>
-                  <h5 className="mb-1">{voucher.cargoId}</h5>
-                  <p className="mb-1">{voucher.tripId}</p>
-                  {voucher.voucherNo && <small className="mb-1 text-secondary">Voucher No.:{voucher.voucherNo}</small>}
+                  <p className="mb-1"><Link to={`/cargo/detail/${voucher.cargoId}`}>{voucher.cargoTitle}</Link></p>
+                  <p className="mb-0"><small className="mb-1">{voucher.tripTitle}</small></p>
+                  {voucher.voucherNo &&
+                      <p className="mb-0">
+                        <small className="mb-1 text-secondary">Voucher No.:{voucher.voucherNo}</small>
+                      </p>
+                  }
                 </CCol>
                 <CCol sm={2}>
                   {voucher.dr != null && voucher.dr > 0 &&
