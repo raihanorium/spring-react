@@ -18,6 +18,6 @@ export function FormattedCurrency(props: Props) {
   }
 
   return (
-      props.number && <span style={props.number < 0 ? {color: 'red'} : undefined}>{format(props.number)}</span>
+      props.number !== null ? <span style={props.number < 0 ? {color: 'red'} : undefined}>{format(props.number)}</span> : null
   );
 }

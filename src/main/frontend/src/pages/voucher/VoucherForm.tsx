@@ -7,12 +7,12 @@ import "react-datepicker/dist/react-datepicker.css";
 import {DateInput} from "../../components/DateInput";
 import {Trip} from "../../model/Trip";
 import Select from "react-select";
-import {Cargo} from "../../model/Cargo";
 import {useCargoService, useTripService, useVoucherService} from "../../service/useService";
 import {Page} from "../../model/Page";
 import {SpinnerContainer} from "../../utils/SpinnerContainer";
 import {PageParams} from "../../model/PageParams";
 import {SelectionOption} from "../../model/SelectionOption";
+import {AsyncPaginate} from "react-select-async-paginate";
 
 
 export default function VoucherForm() {
@@ -40,18 +40,12 @@ export default function VoucherForm() {
   const [voucher, setVoucher] = useState<Voucher | null>(null);
 
   useEffect(() => {
-    if (cargoService !== null) {
-      cargoService.getCargos(PageParams.nullObject()).then((cargos: Page<Cargo>) => {
-        setCargoOptions(cargos.content.map(cargo => SelectionOption.from(cargo.name, cargo.id)));
-      });
-    }
-
     if (tripService !== null) {
       tripService.getTrips().then((trips: Page<Trip>) => {
         setTripOptions(trips.content.map(trip => SelectionOption.from(trip.getLabel(), trip.id)));
       });
     }
-  }, [cargoService, tripService]);
+  }, [tripService]);
 
   useEffect(() => {
     if (voucherId && voucherService && tripOptions && cargoOptions) {
@@ -114,15 +108,29 @@ export default function VoucherForm() {
               {voucherId && <CFormInput name="id" type="hidden" id="id" value={voucherId}/>}
 
               <CFormLabel htmlFor="cargoId">Cargo</CFormLabel>
-              <Select name="cargoId" id="cargoId" options={cargoOptions} isClearable={true} required
-                      onChange={handleCargoChange}
-                      value={selectedCargoOption}
-                      styles={{
-                        control: (baseStyles) => ({
-                          ...baseStyles,
-                          borderColor: validated ? (cargoValid ? '#2eb85c' : 'red') : 'gray',
-                        }),
-                      }}/>
+              <AsyncPaginate
+                  name="cargoId" id="cargoId" isClearable={true} required
+                  value={selectedCargoOption}
+                  loadOptions={async (search, prevOptions) => {
+                    if (cargoService) {
+                      let pageParams = PageParams.fromSearch(search);
+                      pageParams.page = pageParams.size ? prevOptions.length / pageParams.size : 0;
+                      const page = await cargoService.getCargos(pageParams);
+                      return {
+                        options: page.content.map(cargo => SelectionOption.from(cargo.name, cargo.id)),
+                        hasMore: page.totalElements > page.number * page.size + page.content.length
+                      };
+                    }
+                    return {options: [], hasMore: false, additional: {page: 0}};
+                  }}
+                  onChange={handleCargoChange}
+                  styles={{
+                    control: (baseStyles, state) => ({
+                      ...baseStyles,
+                      borderColor: validated ? (cargoValid ? '#2eb85c' : 'red') : 'gray',
+                    }),
+                  }}
+              />
               <CFormFeedback invalid style={{display: cargoValid ? 'none' : 'block'}}>
                 Please select a cargo.
               </CFormFeedback>

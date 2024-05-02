@@ -4,6 +4,10 @@ export class PageParams {
     return new PageParams('', 0, 10, 'id', 'asc');
   }
 
+  static fromSearch(search: string) {
+    return new PageParams(search, 0, 10, 'id', 'asc');
+  }
+
   constructor(
       public search?: string,
       public page?: number,
