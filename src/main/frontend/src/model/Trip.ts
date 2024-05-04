@@ -32,7 +32,7 @@ export class Trip {
   }
 
   public getLabel(): string {
-    return this.from + "-" + this.to + "-" + DateUtils.toString(this.startDate);
+    return this.cargoTitle + "-" + this.from + "-" + this.to + "-" + DateUtils.toString(this.startDate);
   }
 
   public constructor(

@@ -5,10 +5,7 @@ import {useNavigate, useParams} from "react-router-dom";
 import {Voucher} from "../../model/Voucher";
 import "react-datepicker/dist/react-datepicker.css";
 import {DateInput} from "../../components/DateInput";
-import {Trip} from "../../model/Trip";
-import Select from "react-select";
 import {useCargoService, useTripService, useVoucherService} from "../../service/useService";
-import {Page} from "../../model/Page";
 import {SpinnerContainer} from "../../utils/SpinnerContainer";
 import {PageParams} from "../../model/PageParams";
 import {SelectionOption} from "../../model/SelectionOption";
@@ -33,6 +30,8 @@ export default function VoucherForm() {
   const [selectedCargoOption, setSelectedCargoOption] = useState<SelectionOption | null>(null);
   const [cargoValid, setCargoValid] = useState(true);
 
+  const [amountValid, setAmountValid] = useState(true);
+
   const navigate = useNavigate();
 
   const {voucherId} = useParams();
@@ -40,15 +39,7 @@ export default function VoucherForm() {
   const [voucher, setVoucher] = useState<Voucher | null>(null);
 
   useEffect(() => {
-    if (tripService !== null) {
-      tripService.getTrips().then((trips: Page<Trip>) => {
-        setTripOptions(trips.content.map(trip => SelectionOption.from(trip.getLabel(), trip.id)));
-      });
-    }
-  }, [tripService]);
-
-  useEffect(() => {
-    if (voucherId && voucherService && tripOptions && cargoOptions) {
+    if (voucherId && voucherService) {
       setLoading(true);
       voucherService.getVoucher(Number(voucherId)).then(v => {
         if (v) {
@@ -73,17 +64,25 @@ export default function VoucherForm() {
     setCargoValid(!!selectedOption);
   };
 
+  function isAmountValid(voucher: Voucher) {
+    const drAmount = Number(voucher.dr) | 0;
+    const crAmount = Number(voucher.cr) | 0;
+    return (drAmount == 0 || crAmount == 0) && drAmount != crAmount;
+  }
+
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     event.stopPropagation()
     const form = event.currentTarget
+    const formData = new FormData(form);
+    const voucher = Voucher.from(formData);
     setValidated(true);
     setCargoValid(!!selectedCargoOption);
     setTripValid(!!selectedTripOption);
-    if (form.checkValidity()) {
+    setAmountValid(isAmountValid(voucher));
+
+    if (form.checkValidity() && isAmountValid(voucher)) {
       setSubmitting(true);
-      const formData = new FormData(form);
-      const voucher = Voucher.from(formData);
 
       if (voucherService !== null) {
         voucherService.saveVoucher(voucher).then(() => {
@@ -115,6 +114,7 @@ export default function VoucherForm() {
                     if (cargoService) {
                       let pageParams = PageParams.fromSearch(search);
                       pageParams.page = pageParams.size ? prevOptions.length / pageParams.size : 0;
+                      pageParams.direction = 'desc';
                       const page = await cargoService.getCargos(pageParams);
                       return {
                         options: page.content.map(cargo => SelectionOption.from(cargo.name, cargo.id)),
@@ -139,15 +139,30 @@ export default function VoucherForm() {
           <CRow className="mb-3">
             <CCol>
               <CFormLabel htmlFor="tripId">Trip</CFormLabel>
-              <Select name="tripId" id="tripId" options={tripOptions} isClearable={true}
-                      onChange={handleTripChange}
-                      value={selectedTripOption}
-                      styles={{
-                        control: (baseStyles) => ({
-                          ...baseStyles,
-                          borderColor: validated ? (tripValid ? '#2eb85c' : 'red') : 'gray',
-                        }),
-                      }}/>
+              <AsyncPaginate
+                  name="tripId" id="tripId" isClearable={true} required
+                  value={selectedTripOption}
+                  loadOptions={async (search, prevOptions) => {
+                    if (tripService) {
+                      let pageParams = PageParams.fromSearch(search);
+                      pageParams.page = pageParams.size ? prevOptions.length / pageParams.size : 0;
+                      pageParams.direction = 'desc';
+                      const page = await tripService.getTrips(pageParams);
+                      return {
+                        options: page.content.map(trip => SelectionOption.from(trip.getLabel(), trip.id)),
+                        hasMore: page.totalElements > page.number * page.size + page.content.length
+                      };
+                    }
+                    return {options: [], hasMore: false, additional: {page: 0}};
+                  }}
+                  onChange={handleTripChange}
+                  styles={{
+                    control: (baseStyles, state) => ({
+                      ...baseStyles,
+                      borderColor: validated ? (tripValid ? '#2eb85c' : 'red') : 'gray',
+                    }),
+                  }}
+              />
               <CFormFeedback invalid style={{display: tripValid ? 'none' : 'block'}}>
                 Please select a trip
               </CFormFeedback>
@@ -165,14 +180,18 @@ export default function VoucherForm() {
           </CRow>
           <CRow className="mb-3">
             <CCol>
-              <CFormInput name="dr" type="number" id="dr" label="Dr" required
-                          feedbackInvalid="Enter the Debit amount" defaultValue={voucher?.dr?.toString() ?? undefined}/>
+              <CFormInput name="dr" type="number" id="dr" label="Dr" required min={0}
+                          feedbackInvalid="Enter the Debit amount"
+                          defaultValue={voucher?.dr?.toString() ?? undefined}/>
             </CCol>
             <CCol>
-              <CFormInput name="cr" type="number" id="cr" label="Cr" required
+              <CFormInput name="cr" type="number" id="cr" label="Cr" required min={0}
                           feedbackInvalid="Enter the Credit amount"
                           defaultValue={voucher?.cr?.toString() ?? undefined}/>
             </CCol>
+            <CFormFeedback invalid style={{display: amountValid ? 'none' : 'block'}}>
+              One of the Dr or Cr amount must be 0.
+            </CFormFeedback>
           </CRow>
           <CRow className="mb-3">
             <CCol>

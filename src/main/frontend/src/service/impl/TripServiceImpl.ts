@@ -2,13 +2,14 @@ import {Paths} from "../../utils/Paths";
 import {Page} from "../../model/Page";
 import {Trip} from "../../model/Trip";
 import {TripService} from "../TripService";
+import {PageParams} from "../../model/PageParams";
 
 export class TripServiceImpl implements TripService {
   constructor() {
   }
 
-  async getTrips(page?: number): Promise<Page<Trip>> {
-    const url = page ? `${Paths.TRIPS}?page=${page}` : Paths.TRIPS;
+  async getTrips(params: PageParams): Promise<Page<Trip>> {
+    const url = params.isNotBlank() ? `${Paths.TRIPS}?${params.toParamsString()}` : Paths.TRIPS;
     return await this.getTripsPage(url);
   }
 

@@ -25,8 +25,8 @@ public class TripServiceImpl implements TripService {
     }
 
     @Override
-    public Page<Trip> findAll(Pageable pageable) {
-        return tripRepository.findAll(pageable);
+    public Page<Trip> findAll(String search, Pageable pageable) {
+        return tripRepository.search(search, pageable);
     }
 
     @Override

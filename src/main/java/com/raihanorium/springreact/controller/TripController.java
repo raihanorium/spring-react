@@ -44,10 +44,14 @@ public class TripController {
 
     @GetMapping
     public ResponseEntity<Response<Page<Trip>>> getTrips(@RequestParam(defaultValue = "0") int page,
-                                                         @RequestParam(defaultValue = "10") int size) {
+                                                         @RequestParam(defaultValue = "10") int size,
+                                                         @RequestParam(defaultValue = "id") String sort,
+                                                         @RequestParam(defaultValue = "desc") String direction,
+                                                         @RequestParam(defaultValue = "") String search) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.fromString(direction), sort);
         return ResponseEntity.ok(Response.<Page<Trip>>builder()
                 .success(true)
-                .data(tripService.findAll(PageRequest.of(page, size, Sort.by("id").descending())))
+                .data(tripService.findAll(search, pageRequest))
                 .code(HttpStatus.OK)
                 .build());
     }

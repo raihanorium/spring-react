@@ -10,6 +10,7 @@ import {Pagination} from "../../utils/Pagination";
 import {SpinnerContainer} from "../../utils/SpinnerContainer";
 import {Cargo} from "../../model/Cargo";
 import {FormattedCurrency} from "../../components/FormattedCurrency";
+import {PageParams} from "../../model/PageParams";
 
 type Props = {
   cargo?: Cargo | null
@@ -27,7 +28,7 @@ export default function TripList(props: Props) {
       setLoading(true);
       const tripsPage = props.cargo ?
           tripService.getTripsByCargo(Number(props.cargo.id), currentPageNumber) :
-          tripService.getTrips(currentPageNumber);
+          tripService.getTrips(new PageParams('', currentPageNumber));
       tripsPage.then((trips: Page<Trip>) => {
         setTripsPage(trips);
       }).finally(() => setLoading(false));

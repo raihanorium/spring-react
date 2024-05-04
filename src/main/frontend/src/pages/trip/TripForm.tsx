@@ -83,7 +83,7 @@ export default function TripForm() {
   }, [companyService]);
 
   useEffect(() => {
-    if (tripId && tripService && companyOptions && cargoOptions) {
+    if (tripId && tripService && companyOptions) {
       setLoading(true);
       tripService.getTrip(Number(tripId)).then(t => {
         if (t) {

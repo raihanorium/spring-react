@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface TripService {
     Optional<Trip> findById(Long id);
 
-    Page<Trip> findAll(Pageable pageable);
+    Page<Trip> findAll(String search, Pageable pageable);
 
     Page<Trip> findAllByCargoId(Long cargoId, Pageable pageable);
 
