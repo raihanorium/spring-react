@@ -34,7 +34,9 @@ export class TripServiceImpl implements TripService {
     return await fetch(`${Paths.TRIPS}/${id}`).then(async response => {
       if (response.ok) {
         const json = await response.json();
-        return new Trip(json.data.id, json.data.company?.id, json.data.company?.name, json.data.cargo?.id, json.data.cargo?.name, new Date(json.data.startDate), new Date(json.data.endDate), json.data.from, json.data.to, json.data.rent);
+        const startDate = json.data?.startDate ? new Date(json.data.startDate) : null;
+        const endDate = json.data?.endDate ? new Date(json.data.endDate) : null;
+        return new Trip(json.data.id, json.data.company?.id, json.data.company?.name, json.data.cargo?.id, json.data.cargo?.name, startDate, endDate, json.data.from, json.data.to, json.data.rent);
       } else {
         throw new Error("Failed to fetch trip");
       }
