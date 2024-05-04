@@ -33,4 +33,9 @@ public class Trip {
     @Column(name = "trip_to")
     private String to;
     private Double rent;
+    private Double companyRent;
+    private Double load;
+    private Double rate;
+    private Double shortage;
+    private Double shortageRate;
 }

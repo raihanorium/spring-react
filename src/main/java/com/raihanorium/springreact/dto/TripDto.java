@@ -14,4 +14,9 @@ public class TripDto {
     private String from;
     private String to;
     private Double rent;
+    private Double companyRent;
+    private Double load;
+    private Double rate;
+    private Double shortage;
+    private Double shortageRate;
 }

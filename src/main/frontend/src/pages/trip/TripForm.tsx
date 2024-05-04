@@ -177,8 +177,32 @@ export default function TripForm() {
           </CRow>
           <CRow className="mb-3">
             <CCol>
-              <CFormInput name="rent" type="number" id="rent" label="Rent" required
-                          feedbackInvalid="Rent amount" defaultValue={trip?.rent ?? undefined}/>
+              <CFormInput name="rent" type="number" min="0" id="rent" label="Rent" required
+                          feedbackInvalid="Enter rent" defaultValue={trip?.rent ?? undefined}/>
+            </CCol>
+            <CCol>
+              <CFormInput name="companyRent" type="number" min="0" id="companyRent" label="Company Rent"
+                          defaultValue={trip?.companyRent ?? undefined}/>
+            </CCol>
+          </CRow>
+          <CRow className="mb-3">
+            <CCol>
+              <CFormInput name="load" type="number" min="0" id="load" label="Load"
+                          defaultValue={trip?.load ?? undefined}/>
+            </CCol>
+            <CCol>
+              <CFormInput name="rate" type="number" min="0" step="0.01" id="rate" label="Rate"
+                          defaultValue={trip?.rate ?? undefined}/>
+            </CCol>
+          </CRow>
+          <CRow className="mb-3">
+            <CCol>
+              <CFormInput name="shortage" type="number" min="0" id="shortage" label="Shortage"
+                          defaultValue={trip?.shortage ?? undefined}/>
+            </CCol>
+            <CCol>
+              <CFormInput name="shortageRate" type="number" min="0" step="0.01" id="shortageRate" label="Shortage Rate"
+                          defaultValue={trip?.shortageRate ?? undefined}/>
             </CCol>
           </CRow>
           <CRow className="mb-3">

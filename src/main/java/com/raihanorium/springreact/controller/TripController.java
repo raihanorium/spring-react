@@ -80,6 +80,11 @@ public class TripController {
                 .from(tripDto.getFrom())
                 .to(tripDto.getTo())
                 .rent(tripDto.getRent())
+                .companyRent(tripDto.getCompanyRent())
+                .load(tripDto.getLoad())
+                .rate(tripDto.getRate())
+                .shortage(tripDto.getShortage())
+                .shortageRate(tripDto.getShortageRate())
                 .build();
         return ResponseEntity.ok(Response.<Trip>builder()
                 .success(true)

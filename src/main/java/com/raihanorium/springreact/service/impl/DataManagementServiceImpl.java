@@ -141,6 +141,11 @@ public class DataManagementServiceImpl implements DataManagementService {
                                     .from(row.getCell(6).getStringCellValue().trim())
                                     .to(row.getCell(7).getStringCellValue().trim())
                                     .rent(row.getCell(8).getNumericCellValue())
+                                    .load(row.getCell(9).getNumericCellValue())
+                                    .rate(row.getCell(10).getNumericCellValue())
+                                    .shortage(row.getCell(11).getNumericCellValue())
+                                    .shortageRate(row.getCell(12).getNumericCellValue())
+                                    .companyRent(row.getCell(14).getNumericCellValue())
                                     .build();
                             Trip saved = tripService.save(trip);
                             tripIdMap.put(tripNumber, saved.getId());

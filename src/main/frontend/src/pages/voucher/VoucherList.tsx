@@ -34,29 +34,8 @@ export default function VoucherList(props: Props) {
     }
   }, [currentPageNumber]);
 
-  const columns = [
-    {key: 'cargoId', label: 'Cargo', _props: {scope: 'col'}},
-    {key: 'tripId', label: 'Trip', _props: {scope: 'col'}},
-    {key: 'voucherNo', label: 'Voucher No', _props: {scope: 'col'}},
-    {key: 'date', label: 'Date', _props: {scope: 'col'}},
-    {key: 'dr', label: 'Dr', _props: {scope: 'col'}},
-    {key: 'cr', label: 'Cr', _props: {scope: 'col'}},
-    {key: 'particular', label: 'Particular', _props: {scope: 'col'}},
-    {key: 'action', label: '', _props: {scope: 'col'}},
-  ];
-
-  const boxStyle = {
-    backgroundColor: 'rgb(0, 191, 255)',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    fontSize: '30px',
-    cursor: 'pointer',
-  };
-
   return (
       <SpinnerContainer loading={loading}>
-
         {vouchersPage?.content && vouchersPage.content.map(voucher => {
           return (
               <CRow key={voucher.id} className="list-item">

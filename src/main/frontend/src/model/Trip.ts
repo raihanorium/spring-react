@@ -14,6 +14,11 @@ export class Trip {
         formData.get("from") as string | null,
         formData.get("to") as string | null,
         formData.get("rent") as number | null,
+        formData.get("companyRent") as number | null,
+        formData.get("load") as number | null,
+        formData.get("rate") as number | null,
+        formData.get("shortage") as number | null,
+        formData.get("shortageRate") as number | null,
     );
   }
 
@@ -28,11 +33,24 @@ export class Trip {
       from: this.from,
       to: this.to,
       rent: this.rent,
+      companyRent: this.companyRent,
+      load: this.load,
+      rate: this.rate,
+      shortage: this.shortage,
+      shortageRate: this.shortageRate,
     };
   }
 
   public getLabel(): string {
     return this.cargoTitle + "-" + this.from + "-" + this.to + "-" + DateUtils.toString(this.startDate);
+  }
+
+  public getTotalCost(): number {
+    return ((this.load || 0) * (this.rate || 0)) - ((this.shortage || 0) * (this.shortageRate || 0));
+  }
+
+  public getNetProfit(): number {
+    return (this.companyRent || 0) - this.getTotalCost();
   }
 
   public constructor(
@@ -46,6 +64,11 @@ export class Trip {
       public from: string | null,
       public to: string | null,
       public rent: number | null,
+      public companyRent: number | null,
+      public load: number | null,
+      public rate: number | null,
+      public shortage: number | null,
+      public shortageRate: number | null,
   ) {
   }
 }
