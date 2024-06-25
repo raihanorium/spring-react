@@ -34,6 +34,7 @@ public class Trip {
     private String to;
     private Double rent;
     private Double companyRent;
+    @Column(name = "load_weight")
     private Double load;
     private Double rate;
     private Double shortage;
